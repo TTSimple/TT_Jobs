@@ -1,0 +1,26 @@
+{
+    "name": "support.699pic.com",
+    "description": "support.699pic.com",
+    "type": "project",
+    "authors": [{
+        "name": "yangcai",
+        "email": "yangcai.email@foxmail.com"
+    }],
+    "require": {
+        "php": ">=5.6",
+        "phpdr.net/php-curlmulti": "^4.1",
+        "dragonmantank/cron-expression": "1.*",
+        "topthink/think-orm": "^1.2",
+        "topthink/think-template": "^1.0",
+        "topthink/think-validate": "^1.0"
+    },
+    "require-dev": {
+        "eaglewu/swoole-ide-helper": "dev-master"
+    },
+    "repositories": {
+        "packagist": {
+            "type": "composer",
+            "url": "https://packagist.phpcomposer.com"
+        }
+    }
+}

@@ -1,0 +1,12 @@
+*/.DS_Store
+*.DS_Store
+.idea
+.vscode
+.idea/easyPHP-Swoole.iml
+.idea/modules.xml
+.idea/workspace.xml
+.idea/vcs.xml
+composer.lock
+sftp-config.json
+App/Cron/Conf/config.ini
+App/Cron/Conf/env/develop.php

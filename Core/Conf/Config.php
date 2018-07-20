@@ -43,14 +43,14 @@ class Config
     {
         return [
             "SERVER" => [
-                "LISTEN"          => "0.0.0.0",
+                "LISTEN"          => "127.0.0.1",
                 "SERVER_NAME"     => "swoole",
                 "PORT"            => $this->conf['SWOOLE']['PORT'],
                 "RUN_MODE"        => SWOOLE_PROCESS,    //不建议更改此项
                 "CONTROLLER_POOL" => true,              //web或web socket模式有效
                 "SERVER_TYPE"     => \Core\Swoole\Config::SERVER_TYPE_WEB,
                 "SESSION_NAME"    => 'SESSION_NAME',
-                //                "SERVER_TYPE"     => \Core\Swoole\Config::SERVER_TYPE_WEB_SOCKET, // 直播打开
+//                "SERVER_TYPE"     => \Core\Swoole\Config::SERVER_TYPE_WEB_SOCKET, // 直播打开
 //                'SOCKET_TYPE'     => SWOOLE_TCP,        //当SERVER_TYPE为SERVER_TYPE_SERVER模式时有效
                 "CONFIG" => [
                     'enable_static_handler' => true,

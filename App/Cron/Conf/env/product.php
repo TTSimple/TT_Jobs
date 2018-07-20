@@ -18,7 +18,7 @@ return [
         'tpl_deny_php' => FALSE, // 默认模板引擎是否禁用PHP原生代码
     ],
     'SWOOLE' => [
-        'PORT' => 9501,
+        'PORT' => 9527,
         'CONFIG' => [
             'worker_num'       => 4,
             'task_worker_num'  => 4,

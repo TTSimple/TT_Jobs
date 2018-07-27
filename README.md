@@ -6,7 +6,7 @@
 
 ### 2：
 
-给 `App/Cron/Runtime` 目录科协权限
+给 `App/Cron/Runtime` 目录可写权限
 
 ### 3：
 

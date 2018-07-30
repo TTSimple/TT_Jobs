@@ -1,4 +1,5 @@
-# 请参考 https://help.aliyun.com/document_detail/59293.html 了解更多关于release文件的编写方式 
-
 # 构建源码语言类型
 code.language=scripts
+build.command=git rev-parse HEAD >rdc_build_meta
+
+build.output=rdc_build_meta

@@ -1,0 +1,5 @@
+# 构建源码语言类型
+code.language=scripts
+build.command=git rev-parse HEAD >rdc_build_meta
+
+build.output=rdc_build_meta

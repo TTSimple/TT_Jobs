@@ -15,7 +15,6 @@
         "topthink/think-validate": "^1.0"
     },
     "require-dev": {
-        "eaglewu/swoole-ide-helper": "dev-master"
     },
     "repositories": {
         "packagist": {

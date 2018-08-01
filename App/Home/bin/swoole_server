@@ -1,3 +1,0 @@
-<?php
-$app_path = explode('/', realpath(__DIR__ . '/../')); defined('APP_NAME') or define('APP_NAME', end($app_path)); unset($app_path);
-require_once dirname(__FILE__).'/../../../Core/server';

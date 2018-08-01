@@ -44,6 +44,7 @@ class Config
         return [
             "SERVER" => [
                 "LISTEN"          => "10.25.49.155",
+//                "LISTEN"          => "0.0.0.0",
                 "SERVER_NAME"     => "swoole",
                 "PORT"            => $this->conf['SWOOLE']['PORT'],
                 "RUN_MODE"        => SWOOLE_PROCESS,    //不建议更改此项

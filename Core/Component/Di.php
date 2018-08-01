@@ -34,7 +34,10 @@ class Di
          * 注入的时候不做任何的类型检测与转换
          * 由于编程人员为问题，该注入资源并不一定会被用到
          */
-        $this->container[$key] = [];
+        $this->container[$key] = array(
+            "obj"    => $obj,
+            "params" => $arg,
+        );
         return $this;
     }
 

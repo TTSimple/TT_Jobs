@@ -140,17 +140,17 @@ _.------------------------------------------------------------------._
     }
     echo 'daemonize             ' . $label . "\n";
     $label = 'false';
-    if ($conf->getConf('DEBUG.ENABLE')) {
+    if ($conf->getConf('APP_DEBUG.ENABLE')) {
         $label = 'true';
     }
     echo 'debug enable          ' . $label . "\n";
     $label = 'false';
-    if ($conf->getConf('DEBUG.LOG')) {
+    if ($conf->getConf('APP_DEBUG.LOG')) {
         $label = 'true';
     }
     echo 'debug log error       ' . $label . "\n";
     $label = 'false';
-    if ($conf->getConf('DEBUG.DISPLAY_ERROR')) {
+    if ($conf->getConf('APP_DEBUG.DISPLAY_ERROR')) {
         $label = 'true';
     }
     echo 'debug display error   ' . $label . "\n";

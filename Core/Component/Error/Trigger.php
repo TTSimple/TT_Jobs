@@ -23,7 +23,7 @@ class Trigger
 {
     public static function error($msg, $file = null, $line = null, $errorCode = E_USER_ERROR, $trace = null)
     {
-        $conf = Config::getInstance()->getConf("DEBUG");
+        $conf = Config::getInstance()->getConf("APP_DEBUG");
         if ($trace == null) {
             $trace = debug_backtrace();
         }
@@ -42,7 +42,7 @@ class Trigger
 
     public static function exception(\Exception $exception)
     {
-        $conf    = Config::getInstance()->getConf("DEBUG");
+        $conf    = Config::getInstance()->getConf("APP_DEBUG");
         $handler = Di::getInstance()->get(SysConst::EXCEPTION_HANDLER);
         if (!$handler instanceof IExceptionHandler) {
             $handler = new ExceptionHandler();

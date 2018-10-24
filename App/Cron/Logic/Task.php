@@ -26,7 +26,7 @@ class Task extends ALogic
         $total = 0;
         if ($page = $this->request()->getPage()) {
             if ($page['is_first']) {
-                $page['total'] = $model->count('id')|0;
+                $page['total'] = $model->count('id') | 0;
             }
             $model = $model->limit($page['start'], $page['limit']);
             $this->response()->setPage($page);
@@ -47,7 +47,7 @@ class Task extends ALogic
                 ->setMsg($e->getMessage())
                 ->error();
         }
-        $list = $ret->toArray();
+        $list         = $ret->toArray();
         $responseData = $list;
         return $this->response()
             ->setData($responseData)
@@ -93,6 +93,9 @@ class Task extends ALogic
         }
         if (!$model = Model::get($id)) {
             return $this->response()->error();
+        }
+        if ($model->getAttr('user_id')) {
+            unset($requestData['user_id']);
         }
         if (!$ret = $model->save($requestData)) {
             return $this->response()->error();

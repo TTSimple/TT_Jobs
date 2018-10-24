@@ -23,7 +23,7 @@ class Index extends Controller
     function index()
     {
         $this->response()->withHeader("Content-type", "text/html;charset=utf-8");
-        if (FALSE === $this->_auth()) {
+        if (false === $this->_auth()) {
             $this->response()->write(file_get_contents(ROOT . "/Public/login.html"));
             return;
         }
@@ -40,10 +40,10 @@ class Index extends Controller
             'status'  => 1,
             'message' => 'success',
         ];
-        if (NULL === $username = $this->request()->getParsedBody('username')) {
+        if (null === $username = $this->request()->getParsedBody('username')) {
             return $this->response()->writeJson(HttpStatus::CODE_OK, $responseError);
         }
-        if (NULL === $password = $this->request()->getParsedBody('password')) {
+        if (null === $password = $this->request()->getParsedBody('password')) {
             return $this->response()->writeJson(HttpStatus::CODE_OK, $responseError);
         }
         $model = new AdminModel;
@@ -54,7 +54,10 @@ class Index extends Controller
                 return $this->response()->writeJson(HttpStatus::CODE_OK, $responseError);
             }
             Session::set('auth', $ret->toArray());
-            $clientIp = $this->request()->getSwooleRequest()->header['x-real-ip'];
+            $clientIp = $this->request()->getSwooleRequest()->header['x-real-ip']; // nginx
+            if (!$clientIp) {
+                $clientIp = $this->request()->getSwooleRequest()->server['remote_addr'];  // swoole_http_server
+            }
             $ret->save([
                 'last_ip'    => ip2long($clientIp),
                 'last_login' => time(),
@@ -75,11 +78,25 @@ class Index extends Controller
         return $this->response()->writeJson(HttpStatus::CODE_OK, $responseSuccess);
     }
 
+    function getSession()
+    {
+        $session = $this->request()->session()->get('auth');
+        return $this->response()->writeJson(HttpStatus::CODE_OK, $session);
+    }
+
+    function getUsers()
+    {
+        $users = (new AdminModel)
+            ->field(['id', 'username', 'zh_username'])
+            ->select();
+        return $this->response()->writeJson(HttpStatus::CODE_OK, $users);
+    }
+
     private function _auth()
     {
-        if (NULL === Session::find('auth')) {
-            return FALSE;
+        if (null === Session::find('auth')) {
+            return false;
         }
-        return TRUE;
+        return true;
     }
 }

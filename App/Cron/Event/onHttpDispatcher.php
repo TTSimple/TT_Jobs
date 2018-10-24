@@ -24,30 +24,30 @@ class onHttpDispatcher
     {
         $authSession = $request->session()->get('auth');
         if ($authSession && $authSession['username'] == 'admin') {
-            return TRUE;
+            return true;
         }
         $path = explode('\\', $targetControllerClass);
         if (count($path) >= 3 && $path[2] == 'Index') {
-            return TRUE;
+            return true;
         }
 //        $authCheckName = $path[2] . '\\' . $path[3] . '\\' . $action;
         $authCheckName = $path[2] . '\\' . $path[3];
         try {
-            if (FALSE === (new Auth)->check($authCheckName, $authSession['id'], 'Cron')) {
+            if (false === (new Auth)->check($authCheckName, $authSession['id'], 'Cron')) {
                 self::_error($response);
-                return FALSE;
+                return false;
             }
         } catch (\Exception $e) {
             echo $e->getMessage();
             echo $e->getFile();
             echo $e->getLine();
         }
-        return TRUE;
+        return true;
     }
 
     static function accessLog(Request $request, Response $response, $targetControllerClass, $action)
     {
-        if (NULL === $authSession = $request->session()->get('auth')) {
+        if (null === $authSession = $request->session()->get('auth')) {
             return;
         }
         $path = explode('\\', $targetControllerClass);

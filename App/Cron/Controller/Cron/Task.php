@@ -33,14 +33,15 @@ class Task extends Controller
             return;
         }
         /* 展示字段 */
-        $fields = [
+        $fields       = [
             'id'            => 'ID',
             'task_name'     => '任务名称',
             'description'   => '任务说明',
+            'user_id'       => '添加人',
             'cron_spec'     => '时间表达式',
             'execute_times' => '累计执行次数',
             'prev_time'     => '上次执行时间',
-            'create_at'     => '创建时间',
+            'create_at'     => '添加时间',
             'status'        => '状态',
         ];
         $responseData = $ret->getData();
@@ -109,8 +110,8 @@ class Task extends Controller
             $this->json()->error();
             return;
         }
-        $process = new \swoole_process(function (\swoole_process $process) use($command) {
-            list($runPath, $filePath) = explode(' ', $command); 
+        $process = new \swoole_process(function (\swoole_process $process) use ($command) {
+            list($runPath, $filePath) = explode(' ', $command);
             $process->exec($runPath, [$filePath]);
         }, true, 2);
         $process->start();

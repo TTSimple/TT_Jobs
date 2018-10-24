@@ -16,23 +16,24 @@ class TaskLog extends ALogic
     function getList()
     {
         $model = new Model;
+        $clone_model = clone $model;
         $model->where('id', '>', 0);
-        /* 分页 */
-        if ($page = $this->request()->getPage()) {
-            if ($page['is_first']) {
-                $page['total'] = $model->count('id')|0;
-            }
-            $model = $model->limit($page['start'], $page['limit']);
-            $this->response()->setPage($page);
-        }
         /* 查询 */
         if ($where = $this->request()->getWhere()) {
-            $where = 0 < sizeof($where) ? join(' and ', $where) : array_shift($where);
+//            $where = 0 < sizeof($where) ? join(' and ', $where) : array_shift($where);
             $model = $model->where($where);
         }
         /* 排序 */
         if ($order = $this->request()->getOrder()) {
             $model = $model->order($order);
+        }
+        /* 分页 */
+        if ($page = $this->request()->getPage()) {
+            if ($page['is_first']) {
+                $page['total'] = $clone_model->where($where)->count('id')|0;
+            }
+            $model = $model->limit($page['start'], $page['limit']);
+            $this->response()->setPage($page);
         }
         try {
             $ret = $model->select();

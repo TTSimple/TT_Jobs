@@ -16,9 +16,9 @@ use Core\AbstractInterface\AModel as Model;
  */
 class Admin extends Model
 {
-    protected $autoWriteTimestamp = TRUE;
+    protected $autoWriteTimestamp = true;
 
-    const DELETED = 1;
+    const DELETED   = 1;
     const UN_DELETE = 0;
 
     /**
@@ -50,6 +50,7 @@ class Admin extends Model
 
     /**
      * @param array $snapshotData
+     *
      * @return $this
      */
     function setSnapshotData($snapshotData = [])
@@ -63,18 +64,19 @@ class Admin extends Model
 
     /**
      * @param null $field
+     *
      * @return array|bool
      */
-    function getSnapshotData($field = NULL)
+    function getSnapshotData($field = null)
     {
         if (empty($this->snapshotData)) {
-            return FALSE;
+            return false;
         }
-        if (NULL === $field) {
+        if (null === $field) {
             return $this->snapshotData;
         }
-        if (FALSE === isset($this->snapshotData[$field])) {
-            return FALSE;
+        if (false === isset($this->snapshotData[$field])) {
+            return false;
         }
         return $this->snapshotData[$field];
     }

@@ -18,7 +18,7 @@ define(['backbone'], function(Backbone) {
 		},
 
 		render: function() {
-			
+
 			var data     = this.model.toJSON();
 			var _fields  = this.options.fields || '';
 			var _button  = this.options.button || '';
@@ -129,7 +129,7 @@ define(['backbone'], function(Backbone) {
 			var param = {
 				$ele: $ele,
 				model: this.model
-			}
+			};
 			this.trigger('tr', options, param);
 		},
 

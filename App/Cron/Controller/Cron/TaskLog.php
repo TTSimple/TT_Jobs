@@ -18,6 +18,9 @@ class TaskLog extends Controller
         $logic = new Logic;
         $logic->request()->setPage($this->getPageData());
         $logic->request()->setOrder(['id DESC']);
+        if ($search = $this->request()->getQueryParam('search')) {
+            $logic->request()->setWhere(['task_id' => $search]);
+        }
         $ret = $logic->call('getList');
         if (!$ret->getStatus()) {
             $this->json()->error($ret->getMsg());

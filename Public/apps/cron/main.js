@@ -125,11 +125,14 @@ require(['jquery', 'bootstrap', 'backbone', 'underscore', 'store'], function () 
     //     );
     // });
 
-    // /* 当前用户信息 */
-    // var fun = _.bind(function(data){
-    //     this.APP.session = data.info;
-    // }, window);
-    // $.get('/api/contacts/contactsInfo',{},fun, 'json');
+    /* 当前用户信息 */
+    $.get('/getSession', {}, _.bind(function (data) {
+        this.APP.session = data;
+    }, window), 'json');
 
+    /* 所有用户信息 */
+    $.get('/getUsers', {}, _.bind(function (data) {
+        this.APP.users = data;
+    }, window), 'json');
 
 });

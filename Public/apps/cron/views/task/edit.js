@@ -90,8 +90,9 @@ define(['backbone', 'mu/cache', 'mu/common', 'com/dialog'], function (Backbone, 
             }, this);
 
             if (!model) {
-                data.execute_times  = 0;
+                data.execute_times = 0;
             }
+            data.user_id = APP.session.id;
 
             model
                 ? model.save(data, {wait: true, patch: true, success: saveSuccess})

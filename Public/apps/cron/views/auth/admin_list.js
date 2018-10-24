@@ -76,7 +76,7 @@ define(['backbone', 'mu/cache', 'mu/common', 'com/table'],
                     ]
                     , other_field: '操作'
                     , fn: [
-                        { field: 'last_login', fn: 'date|yyyy-MM-dd hh:mm:ss' }
+                        {field: 'last_login', fn: 'date|yyyy-MM-dd hh:mm:ss'}
                     ]
                 });
 

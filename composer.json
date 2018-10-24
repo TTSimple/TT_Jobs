@@ -8,6 +8,7 @@
     }],
     "require": {
         "php": ">=5.6",
+        "ext-json": "*",
         "phpdr.net/php-curlmulti": "^4.1",
         "dragonmantank/cron-expression": "1.*",
         "topthink/think-orm": "^1.2",

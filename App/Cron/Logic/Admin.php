@@ -46,7 +46,13 @@ class Admin extends ALogic
                 ->setMsg($e->getMessage())
                 ->error();
         }
-        $list         = $ret->toArray();
+
+        $list = $ret->toArray();
+        $list = array_map(function ($item) {
+            $item['last_ip'] = long2ip($item['last_ip']);
+            return $item;
+        }, $list);
+
         $responseData = $list;
         return $this->response()
             ->setData($responseData)

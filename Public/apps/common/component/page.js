@@ -32,7 +32,7 @@ define(['backbone'], function(Backbone) {
             var total = this.model.get('total');
             var center = Math.ceil(showPageLimit / 2);
             var showPageTotal = Math.ceil(total / limit);
-            var showNowPage = parseInt(this.model.get('pageNow'));
+            var showNowPage = parseInt(this.model.get('page'));
 
 			this.showPageTotal = showPageTotal;
 

@@ -21,9 +21,9 @@ define(['backbone', 'mu/cache', 'mu/common', 'com/table'],
                 this.$insertDOM = options.$insertDOM;
                 _.bindAll(this, 'init');
                 cache.gets([
-                    { src: APP_PATH + '/template/task/list.html' },
-                    { src: APP_NAME + '/task', data: this._get, type: 'ec' },
-                    { src: APP_NAME + '/task_group?limit=50&page=1', type: 'json' },
+                    {src: APP_PATH + '/template/task/list.html'},
+                    {src: APP_NAME + '/task', data: this._get, type: 'ec'},
+                    {src: APP_NAME + '/task_group?limit=50&page=1', type: 'json'},
                 ], this.init);
             },
 
@@ -59,8 +59,14 @@ define(['backbone', 'mu/cache', 'mu/common', 'com/table'],
             /* 列表 */
             list: function () {
 
+                var users_hash = {};
+                APP.users.map(function (user) {
+                    users_hash[user.id] = user.zh_username;
+                });
+
                 var replace = {
                     status: APP.hashs.status,
+                    user_id: users_hash,
                 };
 
                 this.table = new Table({
@@ -83,7 +89,7 @@ define(['backbone', 'mu/cache', 'mu/common', 'com/table'],
                     ]
                     , other_field: '操作'
                     , fn: [
-                        { field: 'prev_time', fn: 'date|yyyy-MM-dd hh:mm:ss' }
+                        {field: 'prev_time', fn: 'date|yyyy-MM-dd hh:mm:ss'}
                     ]
                 });
 
@@ -103,7 +109,7 @@ define(['backbone', 'mu/cache', 'mu/common', 'com/table'],
                 var $dropdown = this.$('#task-group-dropdown');
                 var tpl = this._tpl.taskGroupDropdown;
                 var data = this._res[2];
-                var html = _.template(tpl)(data)
+                var html = _.template(tpl)(data);
                 $dropdown.html(html);
             },
 
@@ -117,7 +123,7 @@ define(['backbone', 'mu/cache', 'mu/common', 'com/table'],
                 } else {
                     delete this._get.group_id
                 }
-                this._col.fetch({ data: this._get, reset: true });
+                this._col.fetch({data: this._get, reset: true});
             },
 
             /* 搜索 */
@@ -126,7 +132,8 @@ define(['backbone', 'mu/cache', 'mu/common', 'com/table'],
                 this._get.page = 1;
                 var search = this.$('input[name=search]').val();
                 this._get.search = search;
-                this._col.fetch({ data: this._get, reset: true });
+                this._col.fetch({data: this._get, reset: true});
+                this.table.resetPage();
                 delete this._get.search;
                 return false;
             },
@@ -135,7 +142,7 @@ define(['backbone', 'mu/cache', 'mu/common', 'com/table'],
             edit: function (param) {
                 var model = param.model || '';
                 require(['v/task/edit'], _.bind(function (View) {
-                    new View({ view: this, model: model });
+                    new View({view: this, model: model});
                 }, this));
                 return false;
             },
@@ -153,7 +160,7 @@ define(['backbone', 'mu/cache', 'mu/common', 'com/table'],
                         }
                         model.save(
                             data,
-                            { wait: true, patch: true }
+                            {wait: true, patch: true}
                         );
                     }, this)
                 });
@@ -165,8 +172,8 @@ define(['backbone', 'mu/cache', 'mu/common', 'com/table'],
                 var data = model.toJSON();
 
                 data = {
-                    task_name: data.task_name + '_cpoy',
-                    description: data.description + '_cpoy',
+                    task_name: data.task_name + '_copy',
+                    description: data.description + '_copy',
                     cron_spec: data.cron_spec,
                     command: data.command,
                     group_id: data.group_id,
@@ -174,7 +181,7 @@ define(['backbone', 'mu/cache', 'mu/common', 'com/table'],
                     server_id: data.server_id,
                     task_type: data.task_type,
                     timeout: data.timeout,
-                    user_id: data.user_id,
+                    user_id: APP.session.id,
                     execute_times: 0,
                     prev_time: 0,
                 };
@@ -186,7 +193,7 @@ define(['backbone', 'mu/cache', 'mu/common', 'com/table'],
                         if (state === false) {
                             return;
                         }
-                        this._col.create(data, { wait: true });
+                        this._col.create(data, {wait: true});
                     }, this)
                 });
             },

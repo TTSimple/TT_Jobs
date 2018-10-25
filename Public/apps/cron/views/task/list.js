@@ -79,8 +79,9 @@ define(['backbone', 'mu/cache', 'mu/common', 'com/table'],
                     , width: [
                         'other_field|50px'
                         , 'id|100px'
-                        , 'task_name|350px'
-                        , 'cron_spec|200px'
+                        , 'task_name|550px'
+                        , 'user_id|100px'
+                        , 'cron_spec|100px'
                         , 'execute_times|100px'
                         , 'prev_time|150px'
                         , 'create_at|150px'

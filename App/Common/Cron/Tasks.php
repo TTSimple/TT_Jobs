@@ -16,9 +16,10 @@ use Cron\CronExpression;
 class Tasks
 {
     const SWOOLE_TABLE_NAME = 'CRON_TASKS';
-    const TASKS_SIZE = 2048;
+    const TASKS_SIZE        = 2048;
 
     private $_table;
+    
     private $_tableColumns = [
         'id'              => ['type' => \swoole_table::TYPE_STRING, 'size' => 11],
         'run_id'          => ['type' => \swoole_table::TYPE_STRING, 'size' => 20],
@@ -123,12 +124,12 @@ class Tasks
                 $tableData = [
                     "id"         => $id,
                     "run_minute" => $runMinute,
-                    "run_status" => TasksLoad::RUN_STATUS_NORMAL
+                    "run_status" => TasksLoad::RUN_STATUS_NORMAL,
                 ];
                 $this->_table->set(SnowFlake::make(), $tableData);
             }
         }
-        return TRUE;
+        return true;
     }
 
     /**
@@ -148,7 +149,7 @@ class Tasks
                         TasksLoad::RUN_STATUS_SUCCESS,
                         TasksLoad::RUN_STATUS_FAILED,
                         TasksLoad::RUN_STATUS_ERROR,
-                        TasksLoad::RUN_STATUS_TO_TASK_FAILED
+                        TasksLoad::RUN_STATUS_TO_TASK_FAILED,
                     ]
                 )) {
                     $taskIds[] = $id;
@@ -199,7 +200,7 @@ class Tasks
      */
     private function _cleanProcess()
     {
-        while ($ret = \swoole_process::wait(TRUE)) {
+        while ($ret = \swoole_process::wait(true)) {
             echo "swoole_process wait PID={$ret['pid']}" . PHP_EOL;
             ProcessManager::getInstance()->removeProcessByPid($ret['pid']);
         }

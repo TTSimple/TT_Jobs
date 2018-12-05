@@ -24,20 +24,21 @@ class Process
 
     /**
      * Process constructor.
-     * @param $key
-     * @param $processName
+     *
+     * @param          $key
+     * @param          $processName
      * @param callable $onFinish
-     * @param array $args
+     * @param array    $args
      */
     function __construct($key, $processName, $onFinish, array $args)
     {
-        $this->_args = $args;
-        $this->_key  = $key;
-        $this->_onFinish = $onFinish;
+        $this->_args        = $args;
+        $this->_key         = $key;
+        $this->_onFinish    = $onFinish;
         $this->_processName = $processName;
-        $pid = \swoole_async::exec($processName, [$this, 'onFinish']);
-        $this->_pid = $pid;
-        TableManager::getInstance()->get(ProcessManager::SWOOLE_TABLE_NAME)->set(md5($key),['pid'=>$pid]);
+        $pid                = \swoole_async::exec($processName, [$this, 'onFinish']);
+        $this->_pid         = $pid;
+        TableManager::getInstance()->get(ProcessManager::SWOOLE_TABLE_NAME)->set(md5($key), ['pid' => $pid]);
     }
 
     /**
@@ -71,6 +72,7 @@ class Process
 
     /**
      * @param $key
+     *
      * @return mixed|null
      */
     function getArg($key)

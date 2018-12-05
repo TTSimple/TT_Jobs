@@ -2,9 +2,7 @@
 
 namespace Core\Conf;
 
-use Core\Component\Di;
 use Core\Component\Spl\SplArray;
-use Core\Component\SysConst;
 
 class Config
 {
@@ -41,24 +39,7 @@ class Config
 
     private function sysConf()
     {
-        return [
-            "SERVER" => [
-                "LISTEN"          => "10.25.49.155",
-//                "LISTEN"          => "0.0.0.0",
-                "SERVER_NAME"     => "swoole",
-                "PORT"            => $this->conf['SWOOLE']['PORT'],
-                "RUN_MODE"        => SWOOLE_PROCESS,    //不建议更改此项
-                "CONTROLLER_POOL" => true,              //web或web socket模式有效
-                "SERVER_TYPE"     => \Core\Swoole\Config::SERVER_TYPE_WEB,
-                "SESSION_NAME"    => 'SESSION_NAME',
-//                "SERVER_TYPE"     => \Core\Swoole\Config::SERVER_TYPE_WEB_SOCKET, // 直播打开
-//                'SOCKET_TYPE'     => SWOOLE_TCP,        //当SERVER_TYPE为SERVER_TYPE_SERVER模式时有效
-                "CONFIG" => [
-                    'enable_static_handler' => true,
-                    'document_root'         => $this->conf['APP_PUBLIC_DIR'],
-                ] + $this->conf['SWOOLE']['CONFIG'],
-            ]
-        ];
+        return $this->conf['SWOOLE'];
     }
 
     private function appConf()

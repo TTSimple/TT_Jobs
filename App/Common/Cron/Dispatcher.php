@@ -46,6 +46,7 @@ class Dispatcher
     /**
      * @param \swoole_server $server
      * @param                $workerId
+     *
      * @return $this
      */
     function setServer(\swoole_server $server, $workerId)
@@ -118,7 +119,7 @@ class Dispatcher
 //        var_dump($taskInfo);
 
         if ($task = TasksLoad::getInstance()->getTasks()->get($taskInfo['id'])) {
-            $taskLogModel = new \Cron\Model\TaskLog;
+            $taskLogModel               = new \Cron\Model\TaskLog;
             $taskLogModel->task_id      = $task['id'];
             $taskLogModel->output       = $result;
             $taskLogModel->command      = $task['command'];

@@ -21,6 +21,7 @@ class ProcessManager
     const SWOOLE_TABLE_NAME = 'CRON_PROCESS_MANAGER';
 
     private $_processList = [];
+
     private $_table;
 
     protected static $instance;
@@ -39,19 +40,20 @@ class ProcessManager
             self::SWOOLE_TABLE_NAME, [
             'pid' => [
                 'type' => \swoole_table::TYPE_INT,
-                'size' => 10
-            ]
+                'size' => 10,
+            ],
         ], 256
         );
         $this->_table = TableManager::getInstance()->get(self::SWOOLE_TABLE_NAME);
     }
 
     /**
-     * @param $key
-     * @param $processName
-     * @param $processClass
+     * @param          $key
+     * @param          $processName
+     * @param          $processClass
      * @param callable $onFinish
-     * @param array $args
+     * @param array    $args
+     *
      * @return bool
      */
     public function addProcess($key, $processName, $processClass, $onFinish, array $args = [])
@@ -63,7 +65,7 @@ class ProcessManager
         $md5Key = $this->_generateKey($key);
         if (!isset($this->_processList[$md5Key])) {
             try {
-                $process = new $processClass($key, $processName, $onFinish, $args);
+                $process                     = new $processClass($key, $processName, $onFinish, $args);
                 $this->_processList[$md5Key] = $process;
                 return true;
             } catch (\Throwable $throwable) {
@@ -78,6 +80,7 @@ class ProcessManager
 
     /**
      * @param $key
+     *
      * @return bool
      */
     public function removeProcessByKey($key)
@@ -91,6 +94,7 @@ class ProcessManager
 
     /**
      * @param $pid
+     *
      * @return bool
      */
     public function removeProcessByPid($pid)
@@ -99,7 +103,7 @@ class ProcessManager
             $this->_removeInTable($process);
             if (\swoole_process::kill($pid, 0)) {
                 \swoole_process::kill($pid);
-                while($ret = \swoole_process::wait(false)) {
+                while ($ret = \swoole_process::wait(false)) {
 //                    echo "PID={$ret['pid']}\n";
                 }
             }
@@ -109,6 +113,7 @@ class ProcessManager
 
     /**
      * @param $key
+     *
      * @return mixed|null
      */
     public function getProcessByKey($key)
@@ -123,6 +128,7 @@ class ProcessManager
 
     /**
      * @param $pid
+     *
      * @return Process|null
      */
     public function getProcessByPid($pid)
@@ -141,12 +147,13 @@ class ProcessManager
      */
     public function setProcess($key, $process)
     {
-        $key  = $this->_generateKey($key);
+        $key                      = $this->_generateKey($key);
         $this->_processList[$key] = $process;
     }
 
     /**
      * @param $key
+     *
      * @return bool
      */
     public function reboot($key)
@@ -161,6 +168,7 @@ class ProcessManager
 
     /**
      * @param $key
+     *
      * @return bool
      */
     public function kill($key)
@@ -169,7 +177,7 @@ class ProcessManager
             $pid = $process->getPid();
             if (\swoole_process::kill($pid, 0)) {
                 \swoole_process::kill($pid);
-                while($ret = \swoole_process::wait(false)) {
+                while ($ret = \swoole_process::wait(false)) {
 //                    echo "PID={$ret['pid']}\n";
                 }
             }

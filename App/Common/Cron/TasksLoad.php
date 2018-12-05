@@ -22,21 +22,22 @@ class TasksLoad
     const LOAD_SIZE = 2048;
 
     const TASK_START = 1;//正常
-    const TASK_STOP = 0;//暂停
+    const TASK_STOP  = 0;//暂停
 
-    const RUN_STATUS_ERROR = -1;//不符合条件，不运行
-    const RUN_STATUS_NORMAL = 0;//未运行
-    const RUN_STATUS_START = 1;//准备运行
+    const RUN_STATUS_ERROR           = -1;//不符合条件，不运行
+    const RUN_STATUS_NORMAL          = 0;//未运行
+    const RUN_STATUS_START           = 1;//准备运行
     const RUN_STATUS_TO_TASK_SUCCESS = 2;//发送任务成功
-    const RUN_STATUS_TO_TASK_FAILED = 3;//发送任务失败
-    const RUN_STATUS_SUCCESS = 4;//运行成功
-    const RUN_STATUS_FAILED = 5;//运行失败
+    const RUN_STATUS_TO_TASK_FAILED  = 3;//发送任务失败
+    const RUN_STATUS_SUCCESS         = 4;//运行成功
+    const RUN_STATUS_FAILED          = 5;//运行失败
 
     private $_table;
+
     private $_tableColumns = [
         "id"              => ['type' => \swoole_table::TYPE_INT, 'size' => 11],
-        "task_name"       => ['type' => \swoole_table::TYPE_STRING, 'size' => 50],
-        "cron_spec"       => ['type' => \swoole_table::TYPE_STRING, 'size' => 100],
+        "task_name"       => ['type' => \swoole_table::TYPE_STRING, 'size' => 500],
+        "cron_spec"       => ['type' => \swoole_table::TYPE_STRING, 'size' => 500],
         "group_id"        => ['type' => \swoole_table::TYPE_INT, 'size' => 11],
         "single"          => ['type' => \swoole_table::TYPE_INT, 'size' => 1],
         "timeout"         => ['type' => \swoole_table::TYPE_INT, 'size' => 11],
@@ -67,12 +68,13 @@ class TasksLoad
 
     /**
      * @param array $data
+     *
      * @return bool
      */
     function addTask(array $data)
     {
         if ($this->_table->count() > self::LOAD_SIZE) {
-            return FALSE;
+            return false;
         }
 
         $tableData = [
@@ -92,6 +94,7 @@ class TasksLoad
 
     /**
      * @param $key
+     *
      * @return bool
      */
     function deleteTask($key)
@@ -101,6 +104,7 @@ class TasksLoad
 
     /**
      * @param $key
+     *
      * @return array
      */
     function getTaskInfo($key)
@@ -132,6 +136,6 @@ class TasksLoad
         } catch (\Exception $e) {
             trigger_error("tasks not found");
         }
-        return TRUE;
+        return true;
     }
 }

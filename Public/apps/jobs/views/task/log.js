@@ -72,8 +72,8 @@ define(['backbone', 'mu/cache', 'mu/common', 'com/table'],
                     , width: [
                         'other_field|50px'
                         , 'task_id|60px'
-                        // , 'command|800px'
-                        , 'output|200px'
+                        , 'command|800px'
+                        // , 'output|300px'
                         // , 'status|100px'
                         , 'process_time|100px'
                         , 'create_at|150px'

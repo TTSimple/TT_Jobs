@@ -79,7 +79,7 @@ define(['backbone', 'mu/cache', 'mu/common', 'com/table'],
                         'other_field|50px'
                         , 'id|60px'
                         // , 'task_name|550px'
-                        , 'description|150px'
+                        , 'description|400px'
                         , 'user_id|100px'
                         , 'cron_spec|100px'
                         , 'execute_times|100px'

@@ -21,19 +21,20 @@ use Core\Utility\File;
 
 /**
  * Class Core
+ *
  * @package Core
  */
 class Core
 {
     protected static $instance;
-    private $preCall;
+    private          $preCall;
 
     function __construct($preCall)
     {
         $this->preCall = $preCall;
     }
 
-    static function getInstance(callable $preCall = NULL)
+    static function getInstance(callable $preCall = null)
     {
         if (!isset(self::$instance)) {
             self::$instance = new static($preCall);
@@ -98,7 +99,7 @@ class Core
         $loader = AutoLoader::getInstance();
         $loader->addNamespace("Core", "Core");
         $loader->addNamespace("Common", "App/Common");
-        $loader->addNamespace(APP_NAME, 'App/' . APP_NAME);
+        $loader->addNamespace('App', 'App');
         //添加系统依赖组件
         $loader->addNamespace("FastRoute", "Core/Vendor/FastRoute");
         $loader->addNamespace("SuperClosure", "Core/Vendor/SuperClosure");
@@ -108,10 +109,10 @@ class Core
     private function registerErrorHandler()
     {
         $conf = Config::getInstance()->getConf("APP_DEBUG");
-        if ($conf['ENABLE'] == TRUE) {
+        if ($conf['ENABLE'] == true) {
             ini_set("display_errors", "On");
             error_reporting(E_ALL | E_STRICT);
-            set_error_handler(function ($errorCode, $description, $file = NULL, $line = NULL) {
+            set_error_handler(function ($errorCode, $description, $file = null, $line = null) {
                 Trigger::error($description, $file, $line, $errorCode, debug_backtrace());
             });
             register_shutdown_function(function () {
@@ -120,7 +121,7 @@ class Core
                     Trigger::error($error['message'], $error['file'], $error['line'], E_ERROR, debug_backtrace());
                     //HTTP下，发送致命错误时，原有进程无法按照预期结束链接,强制执行end
                     if (Request::getInstance()) {
-                        Response::getInstance()->end(TRUE);
+                        Response::getInstance()->end(true);
                     }
                 }
             });

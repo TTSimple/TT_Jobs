@@ -24,28 +24,29 @@
 
 
 require_once 'Core.php';
+
 $server = \Core\Core::getInstance()->frameWorkInitialize();
 
 function commandParser()
 {
     global $argv;
     $command = '';
-    $options = array();
+    $options = [];
     if (isset($argv[1])) {
         $command = $argv[1];
     }
     foreach ($argv as $item) {
         if (substr($item, 0, 2) === '--') {
-            $temp = trim($item, "--");
-            $temp = explode("-", $temp);
-            $key  = array_shift($temp);
+            $temp          = trim($item, "--");
+            $temp          = explode("-", $temp);
+            $key           = array_shift($temp);
             $options[$key] = array_shift($temp) ?: '';
         }
     }
-    return array(
+    return [
         "command" => $command,
-        "options" => $options
-    );
+        "options" => $options,
+    ];
 }
 
 function commandHandler()
@@ -53,49 +54,49 @@ function commandHandler()
     $command = commandParser();
     switch ($command['command']) {
         case "start":
-            {
-                startServer($command['options']);
-                break;
-            }
+        {
+            startServer($command['options']);
+            break;
+        }
         case 'stop':
-            {
-                stopServer($command['options']);
-                break;
-            }
+        {
+            stopServer($command['options']);
+            break;
+        }
         case 'reload':
-            {
-                reloadServer($command['options']);
-                break;
-            }
+        {
+            reloadServer($command['options']);
+            break;
+        }
         case 'version':
-            {
-                echo \Core\Component\Di::getInstance()->get(\Core\Component\SysConst::VERSION);
-                echo "\n";
-                break;
-            }
+        {
+            echo \Core\Component\Di::getInstance()->get(\Core\Component\SysConst::VERSION);
+            echo "\n";
+            break;
+        }
         case 'help':
         default:
-            {
-                help($command['options']);
-            }
+        {
+            help($command['options']);
+        }
     }
 }
 
 function startServer($options)
 {
-//    $log = '';
-    $log =
+    $log      =
         "
            _____              _____
     _________  /______ _________  /_
     __  ___/  __/  __ `/_  ___/  __/
     _(__  )/ /_ / /_/ /_  /   / /_
     /____/ \__/ \__,_/ /_/    \__/        Thanks PHP and Swoole.
-
+    
+                      Power by EasySwoole v1.0
 _.------------------------------------------------------------------._
 \n";
     $now_date = date('Y-m-d H:i:s');
-    $log      .= "stat time: {$now_date} \n";
+    $log      .= "                   stat time: {$now_date} \n";
     echo $log . "\n";
     opCacheClear();
     global $server;
@@ -123,11 +124,11 @@ _.------------------------------------------------------------------._
     if (isset($options['user'])) {
         $conf->setConf("SERVER.CONFIG.user", $options['user']);
     }
-    echo 'user                  ' . $conf->getConf('SERVER.CONFIG.user') . "\n";
-    if (isset($options['group'])) {
-        $conf->setConf("SERVER.CONFIG.group", $options['group']);
-    }
-    echo 'user group            ' . $conf->getConf('SERVER.CONFIG.group') . "\n";
+    echo 'user                  ' . get_current_user() . "\n";
+//    if (isset($options['group'])) {
+//        $conf->setConf("SERVER.CONFIG.group", $options['group']);
+//    }
+//    echo 'user group            ' . $conf->getConf('SERVER.CONFIG.group') . "\n";
     if (isset($options['cpuAffinity'])) {
         $conf->setConf("SERVER.CONFIG.open_cpu_affinity", true);
     }
@@ -235,44 +236,44 @@ function help($options)
     }
     switch ($opName) {
         case 'start':
-            {
-                echo "------------ 启动命令 ------------\n";
-                echo "执行php App/bin/swoole_server start 即可启动服务。启动可选参数为:\n";
-                echo "--d                       是否以系统守护模式运行\n";
-                echo "--p-portNumber            指定服务监听端口\n";
-                echo "--pid-fileName            指定服务PID存储文件\n";
-                echo "--workerNum-num           设置worker进程数\n";
-                echo "--taskWorkerNum-num       设置Task进程数\n";
-                echo "--user-userName           指定以某个用户身份执行\n";
-                echo "--group-groupName         指定以某个用户组身份执行\n";
-                echo "--taskWorkerNum-num       设置Task进程数\n";
-                echo "--cpuAffinity-boolean     是否开启CPU亲和\n";
-                break;
-            }
+        {
+            echo "------------ 启动命令 ------------\n";
+            echo "执行php App/bin/server start 即可启动服务。启动可选参数为:\n";
+            echo "--d                       是否以系统守护模式运行\n";
+            echo "--p-portNumber            指定服务监听端口\n";
+            echo "--pid-fileName            指定服务PID存储文件\n";
+            echo "--workerNum-num           设置worker进程数\n";
+            echo "--taskWorkerNum-num       设置Task进程数\n";
+            echo "--user-userName           指定以某个用户身份执行\n";
+            echo "--group-groupName         指定以某个用户组身份执行\n";
+            echo "--taskWorkerNum-num       设置Task进程数\n";
+            echo "--cpuAffinity-boolean     是否开启CPU亲和\n";
+            break;
+        }
         case 'stop':
-            {
-                echo "------------ 停止命令 ------------\n";
-                echo "执行php App/bin/swoole_server stop 即可启动服务。启动可选参数为:\n";
-                echo "--pid-fileName        指定服务PID存储文件\n";
-                echo "--f                   强制停止服务\n";
-                break;
-            }
+        {
+            echo "------------ 停止命令 ------------\n";
+            echo "执行php App/bin/server stop 即可启动服务。启动可选参数为:\n";
+            echo "--pid-fileName        指定服务PID存储文件\n";
+            echo "--f                   强制停止服务\n";
+            break;
+        }
         case 'reload':
-            {
-                echo "------------ 重启命令 ------------\n";
-                echo "执行php App/bin/swoole_server reload 即可启动服务。启动可选参数为:\n";
-                echo "--pid-fileName        指定服务PID存储文件\n";
-                echo "--pid-all             是否重启所有进程，默认true\n";
-                break;
-            }
+        {
+            echo "------------ 重启命令 ------------\n";
+            echo "执行php App/bin/server reload 即可启动服务。启动可选参数为:\n";
+            echo "--pid-fileName        指定服务PID存储文件\n";
+            echo "--pid-all             是否重启所有进程，默认true\n";
+            break;
+        }
         default:
-            {
-                echo "------------ 欢迎使用 ------------\n";
-                echo "有关某个命令的详细信息，请使用 help 命令, 如help --start 可选参数为:\n";
-                echo "--start            启动\n";
-                echo "--stop             停止\n";
-                echo "--reload           重启\n";
-            }
+        {
+            echo "------------ 欢迎使用 ------------\n";
+            echo "有关某个命令的详细信息，请使用 help 命令, 如help --start 可选参数为:\n";
+            echo "--start            启动\n";
+            echo "--stop             停止\n";
+            echo "--reload           重启\n";
+        }
     }
 }
 

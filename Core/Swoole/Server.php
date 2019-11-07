@@ -24,11 +24,11 @@ use Core\Swoole\Pipe\Dispatcher as PipeDispatcher;
 class Server
 {
     const SERVER_NOT_START = 0;
-    const SERVER_STARTED = 1;
+    const SERVER_STARTED   = 1;
 
     protected static $instance;
-    protected $swooleServer;
-    protected $isStart = self::SERVER_NOT_START;
+    protected        $swooleServer;
+    protected        $isStart = self::SERVER_NOT_START;
 
     /*
      * 仅仅用于获取一个服务实例
@@ -107,6 +107,7 @@ class Server
     /**
      * 用于获取 swoole_server 实例
      * server启动后，在每个进程中获得的，均为当前自身worker的server（可以理解为进程克隆后独立运行）
+     *
      * @return \swoole_server
      */
     function getServer()
@@ -134,7 +135,7 @@ class Server
                     Trigger::exception($exception);
                 }
             }
-            $response2->end(TRUE);
+            $response2->end(true);
         });
     }
 
@@ -167,9 +168,9 @@ class Server
                     } elseif ($taskObj instanceof SuperClosure) {
                         return $taskObj($server, $taskId);
                     }
-                    return NULL;
+                    return null;
                 } catch (\Exception $exception) {
-                    return NULL;
+                    return null;
                 }
             });
         }

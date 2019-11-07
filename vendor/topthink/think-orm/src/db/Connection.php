@@ -21,6 +21,7 @@ use think\db\exception\PDOException;
 
 abstract class Connection
 {
+    const PARAM_FLOAT          = 21;
     protected static $instance = [];
     /** @var PDOStatement PDO操作实例 */
     protected $PDOStatement;
@@ -305,7 +306,9 @@ abstract class Connection
     {
         if (0 === strpos($type, 'set') || 0 === strpos($type, 'enum')) {
             $bind = PDO::PARAM_STR;
-        } elseif (preg_match('/(int|double|float|decimal|real|numeric|serial|bit)/is', $type)) {
+        } elseif (preg_match('/(double|float|decimal|real|numeric)/is', $type)) {
+            $bind = self::PARAM_FLOAT;
+        } elseif (preg_match('/(int|serial|bit)/is', $type)) {
             $bind = PDO::PARAM_INT;
         } elseif (preg_match('/bool/is', $type)) {
             $bind = PDO::PARAM_BOOL;
@@ -558,20 +561,13 @@ abstract class Connection
 
         $this->bind = $bind;
 
-        // 释放前次的查询结果
-        if (!empty($this->PDOStatement)) {
-            $this->free();
-        }
-
         Db::$queryTimes++;
 
         // 调试开始
         $this->debug(true);
 
         // 预处理
-        if (empty($this->PDOStatement)) {
-            $this->PDOStatement = $this->linkID->prepare($sql);
-        }
+        $this->PDOStatement = $this->linkID->prepare($sql);
 
         // 是否为存储过程调用
         $procedure = in_array(strtolower(substr(trim($sql), 0, 4)), ['call', 'exec']);
@@ -630,11 +626,6 @@ abstract class Connection
 
         $this->bind = $bind;
 
-        // 释放前次的查询结果
-        if (!empty($this->PDOStatement)) {
-            $this->free();
-        }
-
         Db::$queryTimes++;
 
         try {
@@ -642,9 +633,7 @@ abstract class Connection
             $this->debug(true);
 
             // 预处理
-            if (empty($this->PDOStatement)) {
-                $this->PDOStatement = $this->linkID->prepare($sql);
-            }
+            $this->PDOStatement = $this->linkID->prepare($sql);
 
             // 是否为存储过程调用
             $procedure = in_array(strtolower(substr(trim($sql), 0, 4)), ['call', 'exec']);
@@ -709,20 +698,13 @@ abstract class Connection
 
         $this->bind = $bind;
 
-        //释放前次的查询结果
-        if (!empty($this->PDOStatement) && $this->PDOStatement->queryString != $sql) {
-            $this->free();
-        }
-
         Db::$executeTimes++;
         try {
             // 调试开始
             $this->debug(true);
 
             // 预处理
-            if (empty($this->PDOStatement)) {
-                $this->PDOStatement = $this->linkID->prepare($sql);
-            }
+            $this->PDOStatement = $this->linkID->prepare($sql);
 
             // 是否为存储过程调用
             $procedure = in_array(strtolower(substr(trim($sql), 0, 4)), ['call', 'exec']);
@@ -817,6 +799,8 @@ abstract class Connection
 
         // 生成查询SQL
         $sql = $this->builder->select($query);
+
+        $query->removeOption('limit');
 
         $bind = $query->getBind();
 
@@ -1271,8 +1255,17 @@ abstract class Connection
 
         $query->setOption('field', $field);
         $query->setOption('limit', 1);
+
         // 生成查询SQL
         $sql = $this->builder->select($query);
+
+        if (isset($options['field'])) {
+            $query->setOption('field', $options['field']);
+        } else {
+            $query->removeOption('field');
+        }
+
+        $query->removeOption('limit');
 
         $bind = $query->getBind();
 
@@ -1283,11 +1276,6 @@ abstract class Connection
 
         // 执行查询操作
         $pdo = $this->query($sql, $bind, $options['master'], true);
-
-        if (is_string($pdo)) {
-            // 返回SQL语句
-            return $pdo;
-        }
 
         $result = $pdo->fetchColumn();
 
@@ -1328,19 +1316,27 @@ abstract class Connection
         }
 
         if (is_null($field)) {
-            $field = '*';
-        } elseif ($key && '*' != $field) {
-            $field = $key . ',' . $field;
+            $field = ['*'];
+        } elseif (is_string($field)) {
+            $field = array_map('trim', explode(',', $field));
         }
 
-        if (is_string($field)) {
-            $field = array_map('trim', explode(',', $field));
+        if ($key && ['*'] != $field) {
+            array_unshift($field, $key);
+            $field = array_unique($field);
         }
 
         $query->setOption('field', $field);
 
         // 生成查询SQL
         $sql = $this->builder->select($query);
+
+        // 还原field参数
+        if (isset($options['field'])) {
+            $query->setOption('field', $options['field']);
+        } else {
+            $query->removeOption('field');
+        }
 
         $bind = $query->getBind();
 
@@ -1357,7 +1353,7 @@ abstract class Connection
         } else {
             $resultSet = $pdo->fetchAll(PDO::FETCH_ASSOC);
 
-            if ('*' == $field && $key) {
+            if (['*'] == $field && $key) {
                 $result = array_column($resultSet, null, $key);
             } elseif ($resultSet) {
                 $fields = array_keys($resultSet[0]);
@@ -1402,7 +1398,11 @@ abstract class Connection
      */
     public function aggregate(Query $query, $aggregate, $field)
     {
-        $field = $aggregate . '(' . $this->builder->parseKey($query, $field, true) . ') AS tp_' . strtolower($aggregate);
+        if (is_string($field) && 0 === stripos($field, 'DISTINCT ')) {
+            list($distinct, $field) = explode(' ', $field);
+        }
+
+        $field = $aggregate . '(' . (!empty($distinct) ? 'DISTINCT ' : '') . $this->builder->parseKey($query, $field, true) . ') AS tp_' . strtolower($aggregate);
 
         return $this->value($query, $field, 0);
     }
@@ -1448,19 +1448,16 @@ abstract class Connection
             $value = is_array($val) ? $val[0] : $val;
             $type  = is_array($val) ? $val[1] : PDO::PARAM_STR;
 
-            if (PDO::PARAM_STR == $type) {
-                $value = '\'' . addslashes($value) . '\'';
-            } elseif (PDO::PARAM_INT == $type) {
+            if (PDO::PARAM_INT == $type || self::PARAM_FLOAT == $type) {
                 $value = (float) $value;
+            } elseif (PDO::PARAM_STR == $type) {
+                $value = '\'' . addslashes($value) . '\'';
             }
 
             // 判断占位符
             $sql = is_numeric($key) ?
             substr_replace($sql, $value, strpos($sql, '?'), 1) :
-            str_replace(
-                [':' . $key . ')', ':' . $key . ',', ':' . $key . ' ', ':' . $key . PHP_EOL],
-                [$value . ')', $value . ',', $value . ' ', $value . PHP_EOL],
-                $sql . ' ');
+            str_replace(':' . $key, $value, $sql);
         }
 
         return rtrim($sql);
@@ -1484,7 +1481,11 @@ abstract class Connection
             if (is_array($val)) {
                 if (PDO::PARAM_INT == $val[1] && '' === $val[0]) {
                     $val[0] = 0;
+                } elseif (self::PARAM_FLOAT == $val[1]) {
+                    $val[0] = (float) $val[0];
+                    $val[1] = PDO::PARAM_STR;
                 }
+
                 $result = $this->PDOStatement->bindValue($param, $val[0], $val[1]);
             } else {
                 $result = $this->PDOStatement->bindValue($param, $val);
@@ -1670,13 +1671,9 @@ abstract class Connection
                     $this->parseSavepoint('trans' . $this->transTimes)
                 );
             }
-        } catch (\PDOException $e) {
-            if ($this->isBreak($e)) {
-                return $this->close()->startTrans();
-            }
-            throw $e;
         } catch (\Exception $e) {
             if ($this->isBreak($e)) {
+                --$this->transTimes;
                 return $this->close()->startTrans();
             }
             throw $e;
@@ -2030,7 +2027,7 @@ abstract class Connection
 
         // 分布式数据库配置解析
         foreach (['username', 'password', 'hostname', 'hostport', 'database', 'dsn', 'charset'] as $name) {
-            $_config[$name] = explode(',', $this->config[$name]);
+            $_config[$name] = is_string($this->config[$name]) ? explode(',', $this->config[$name]) : $this->config[$name];
         }
 
         // 主服务器序号

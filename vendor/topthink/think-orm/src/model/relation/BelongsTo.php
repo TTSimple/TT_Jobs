@@ -34,6 +34,10 @@ class BelongsTo extends OneToOne
         $this->joinType   = 'INNER';
         $this->query      = (new $model)->db();
         $this->relation   = $relation;
+
+        if (get_class($parent) == $model) {
+            $this->selfRelation = true;
+        }
     }
 
     /**
@@ -65,6 +69,26 @@ class BelongsTo extends OneToOne
     }
 
     /**
+     * 创建关联统计子查询
+     * @access public
+     * @param  \Closure $closure 闭包
+     * @param  string   $aggregate 聚合查询方法
+     * @param  string   $field 字段
+     * @return string
+     */
+    public function getRelationCountQuery($closure, $aggregate = 'count', $field = '*')
+    {
+        if ($closure) {
+            $closure($this->query);
+        }
+
+        return $this->query
+            ->whereExp($this->localKey, '=' . $this->parent->getTable() . '.' . $this->foreignKey)
+            ->fetchSql()
+            ->$aggregate($field);
+    }
+
+    /**
      * 根据关联条件查询当前模型
      * @access public
      * @param string  $operator 比较操作符
@@ -74,7 +98,19 @@ class BelongsTo extends OneToOne
      */
     public function has($operator = '>=', $count = 1, $id = '*')
     {
-        return $this->parent;
+        $table      = $this->query->getTable();
+        $model      = basename(str_replace('\\', '/', get_class($this->parent)));
+        $relation   = basename(str_replace('\\', '/', $this->model));
+        $localKey   = $this->localKey;
+        $foreignKey = $this->foreignKey;
+
+        return $this->parent->db()
+            ->alias($model)
+            ->whereExists(function ($query) use ($table, $model, $relation, $localKey, $foreignKey) {
+                $query->table([$table => $relation])
+                    ->field($relation . '.' . $localKey)
+                    ->whereExp($model . '.' . $foreignKey, '=' . $relation . '.' . $localKey);
+            });
     }
 
     /**

@@ -38,19 +38,21 @@ class TaskManager
      */
     /**
      * add async task
+     *
      * @param      $callable
      * @param int  $workerId
      * @param null $finishCallBack
+     *
      * @return bool
      */
-    function add($callable, $workerId = self::TASK_DISPATCHER_TYPE_RANDOM, $finishCallBack = NULL)
+    function add($callable, $workerId = self::TASK_DISPATCHER_TYPE_RANDOM, $finishCallBack = null)
     {
         if ($callable instanceof \Closure) {
             try {
                 $callable = new SuperClosure($callable);
             } catch (\Exception $exception) {
                 trigger_error("async task serialize fail ");
-                return FALSE;
+                return false;
             }
         }
         return Server::getInstance()->getServer()->task($callable, $workerId, $finishCallBack);
@@ -58,9 +60,11 @@ class TaskManager
 
     /**
      * add sync task
+     *
      * @param       $callable
      * @param float $timeout
      * @param int   $workerId
+     *
      * @return bool|string
      */
     function addSync($callable, $timeout = 0.5, $workerId = self::TASK_DISPATCHER_TYPE_RANDOM)
@@ -70,7 +74,7 @@ class TaskManager
                 $callable = new SuperClosure($callable);
             } catch (\Exception $exception) {
                 trigger_error("async task serialize fail ");
-                return FALSE;
+                return false;
             }
         }
         return Server::getInstance()->getServer()->taskwait($callable, $timeout, $workerId);

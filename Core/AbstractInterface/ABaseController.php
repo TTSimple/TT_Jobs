@@ -6,7 +6,7 @@ namespace Core\AbstractInterface;
 abstract class ABaseController
 {
     protected $actionName = null;
-    protected $callArgs = null;
+    protected $callArgs   = null;
 
     function actionName($actionName = null)
     {
@@ -38,9 +38,9 @@ abstract class ABaseController
            * actionName、onRequest、actionNotFound、afterAction、request
            * response、__call
         */
-        if (in_array($actionName, array(
-            'actionName', 'onRequest', 'actionNotFound', 'afterAction', 'request', 'response', '__call'
-        ))) {
+        if (in_array($actionName, [
+            'actionName', 'onRequest', 'actionNotFound', 'afterAction', 'request', 'response', '__call',
+        ])) {
             $this->responseError();
             return;
         }

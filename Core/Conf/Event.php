@@ -9,6 +9,7 @@ use Core\AutoLoader;
 
 /**
  * Class Event
+ *
  * @package Core\Conf
  */
 class Event extends AEvent
@@ -21,7 +22,7 @@ class Event extends AEvent
     function initialize()
     {
         date_default_timezone_set('Asia/Shanghai');
-        $className           = APP_NAME . '\Conf\SwooleEvent';
+        $className           = 'App\\' . APP_NAME . '\\Conf\\SwooleEvent';
         $this->extendedEvent = new $className;
     }
 
@@ -105,18 +106,14 @@ class Event extends AEvent
 
     private function _AutoReload(\swoole_server $server, $workerId)
     {
-//        if ($workerId == 0) {
-//            \Core\Swoole\Timer::loop(3000, function () {
-//                \Core\Swoole\Server::getInstance()->getServer()->reload();
-//            });
-//        }
-
         if ($workerId == 0) {
-//            $pid        = file_get_contents(Config::getInstance()->getConf("SERVER.CONFIG.pid_file"));
-//            $autoReload = new \Core\Swoole\AutoReload($pid);
-            $autoReload = new \Core\Swoole\AutoReload();
-            $autoReload->watch(ROOT . "/App");
-            $autoReload->run();
+            if (extension_loaded('inotify')) {
+//                $pid        = file_get_contents(Config::getInstance()->getConf("SERVER.CONFIG.pid_file"));
+//                $autoReload = new \Core\Swoole\AutoReload($pid);
+                $autoReload = new \Core\Swoole\AutoReload();
+                $autoReload->watch(ROOT . "/App");
+                $autoReload->run();
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ use Core\Component\Spl\SplArray;
 class Config
 {
     private static $instance;
-    protected $conf;
+    protected      $conf;
 
     function __construct()
     {
@@ -46,7 +46,7 @@ class Config
     {
         $confPath = ROOT . '/App/' . APP_NAME . '/Conf';
         $initConf = parse_ini_file($confPath . '/config.ini');
-        $envConf  = require_once($confPath . '/env/' . $initConf['APP_ENV'] . '.php');
+        $envConf  = require_once($confPath . '/' . $initConf['APP_ENV'] . '.php');
         return array_merge($initConf, $envConf);
     }
 }

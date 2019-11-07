@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit45454362393a6d51fecb708063273b58
+class ComposerStaticInitc29016004c8e325a090afb5a34cc696f
 {
     public static $files = array (
         '33197a0023ced5fbf8f861d1c4ca048d' => __DIR__ . '/..' . '/topthink/think-orm/src/config.php',
@@ -19,34 +19,25 @@ class ComposerStaticInit45454362393a6d51fecb708063273b58
         array (
             'Cron\\' => 5,
         ),
-        'A' => 
-        array (
-            'Ares333\\Curl\\' => 13,
-        ),
     );
 
     public static $prefixDirsPsr4 = array (
         'think\\' => 
         array (
             0 => __DIR__ . '/..' . '/topthink/think-orm/src',
-            1 => __DIR__ . '/..' . '/topthink/think-template/src',
-            2 => __DIR__ . '/..' . '/topthink/think-validate/src',
+            1 => __DIR__ . '/..' . '/topthink/think-validate/src',
         ),
         'Cron\\' => 
         array (
             0 => __DIR__ . '/..' . '/dragonmantank/cron-expression/src/Cron',
-        ),
-        'Ares333\\Curl\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/phpdr.net/php-curlmulti/src',
         ),
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit45454362393a6d51fecb708063273b58::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit45454362393a6d51fecb708063273b58::$prefixDirsPsr4;
+            $loader->prefixLengthsPsr4 = ComposerStaticInitc29016004c8e325a090afb5a34cc696f::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInitc29016004c8e325a090afb5a34cc696f::$prefixDirsPsr4;
 
         }, null, ClassLoader::class);
     }

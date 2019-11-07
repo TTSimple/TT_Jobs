@@ -1,8 +1,0 @@
-/.settings/*
-/.buildpath
-/.classpath
-/.project
-/vendor/*
-/demo/output/*
-/composer.lock
-.DS_Store

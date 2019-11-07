@@ -134,7 +134,7 @@ class Query
             call_user_func_array([$this->model, $method], $args);
             return $this;
         } else {
-            throw new Exception('method not exist:' . static::class . '->' . $method);
+            throw new Exception('method not exist:' . ($this->model ? get_class($this->model) : static::class) . '->' . $method);
         }
     }
 
@@ -244,29 +244,6 @@ class Query
         $name = $name ?: $this->name;
 
         return $this->prefix . Db::parseName($name);
-    }
-
-    /**
-     * 设置字段类型信息
-     * @access public
-     * @param  array $type 字段类型信息
-     * @return $this
-     */
-    public function setJsonFieldType(array $type)
-    {
-        $this->options['field_type'] = $type;
-        return $this;
-    }
-
-    /**
-     * 获取字段类型信息
-     * @access public
-     * @param  string $field 字段名
-     * @return string|null
-     */
-    public function getJsonFieldType($field)
-    {
-        return isset($this->options['field_type'][$field]) ? $this->options['field_type'][$field] : null;
     }
 
     /**
@@ -527,6 +504,18 @@ class Query
     }
 
     /**
+     * 是否允许返回空数据（或空模型）
+     * @access public
+     * @param  bool $allowEmpty 是否允许为空
+     * @return $this
+     */
+    public function allowEmpty($allowEmpty = true)
+    {
+        $this->options['allow_empty'] = $allowEmpty;
+        return $this;
+    }
+
+    /**
      * 得到分表的的数据表名
      * @access public
      * @param array  $data  操作的数据
@@ -644,10 +633,13 @@ class Query
      */
     public function count($field = '*')
     {
-        if (isset($this->options['group'])) {
+        if (!empty($this->options['group'])) {
             // 支持GROUP
             $options = $this->getOptions();
-            $subSql  = $this->options($options)->field('count(' . $field . ')')->bind($this->bind)->buildSql();
+            $subSql  = $this->options($options)
+                ->field('count(' . $field . ') AS think_count')
+                ->bind($this->bind)
+                ->buildSql();
 
             $query = $this->newQuery()->table([$subSql => '_group_count_']);
 
@@ -655,10 +647,12 @@ class Query
                 $query->fetchSql(true);
             }
 
-            return $query->aggregate('COUNT', '*', true);
+            $count = $query->aggregate('COUNT', '*');
+        } else {
+            $count = $this->aggregate('COUNT', $field);
         }
 
-        return $this->aggregate('COUNT', $field, true);
+        return is_string($count) ? $count : (int) $count;
     }
 
     /**
@@ -931,11 +925,13 @@ class Query
         if ($tableName) {
             // 添加统一的前缀
             $prefix = $prefix ?: $tableName;
-            foreach ($field as $key => $val) {
-                if (is_numeric($key)) {
-                    $val = $prefix . '.' . $val . ($alias ? ' AS ' . $alias . $val : '');
+            foreach ($field as $key => &$val) {
+                if (is_numeric($key) && $alias) {
+                    $field[$prefix . '.' . $val] = $alias . $val;
+                    unset($field[$key]);
+                } elseif (is_numeric($key)) {
+                    $val = $prefix . '.' . $val;
                 }
-                $field[$key] = $val;
             }
         }
 
@@ -952,29 +948,13 @@ class Query
      * 表达式方式指定查询字段
      * @access public
      * @param  string $field    字段名
-     * @param  array  $bind     参数绑定
      * @return $this
      */
-    public function fieldRaw($field, array $bind = [])
+    public function fieldRaw($field)
     {
         $this->options['field'][] = $this->raw($field);
 
-        if ($bind) {
-            $this->bind($bind);
-        }
-
         return $this;
-    }
-
-    /**
-     * 设置数据排除字段
-     * @access public
-     * @param  mixed $field 字段名或者数据
-     * @return $this
-     */
-    public function hidden($field)
-    {
-        return $this->field($field, true);
     }
 
     /**
@@ -1150,11 +1130,11 @@ class Query
      */
     public function whereRaw($where, $bind = [], $logic = 'AND')
     {
-        $this->options['where'][$logic][] = $this->raw($where);
-
         if ($bind) {
-            $this->bind($bind);
+            $this->bindParams($where, $bind);
         }
+
+        $this->options['where'][$logic][] = $this->raw($where);
 
         return $this;
     }
@@ -1383,18 +1363,19 @@ class Query
      * 指定Exp查询条件
      * @access public
      * @param mixed  $field     查询字段
-     * @param mixed  $condition 查询条件
+     * @param string $where     查询条件
      * @param array  $bind      参数绑定
      * @param string $logic     查询逻辑 and or xor
      * @return $this
      */
-    public function whereExp($field, $condition, array $bind = [], $logic = 'AND')
+    public function whereExp($field, $where, array $bind = [], $logic = 'AND')
     {
-        $this->options['where'][$logic][] = [$field, 'EXP', $this->raw($condition)];
-
         if ($bind) {
-            $this->bind($bind);
+            $this->bindParams($where, $bind);
         }
+
+        $this->options['where'][$logic][] = [$field, 'EXP', $this->raw($where)];
+
         return $this;
     }
 
@@ -1417,6 +1398,11 @@ class Query
         }
 
         $logic = strtoupper($logic);
+
+        if ($field instanceof Where) {
+            $this->options['where'][$logic] = $field->parse();
+            return $this;
+        }
 
         if (is_string($field) && !empty($this->options['via']) && !strpos($field, '.')) {
             $field = $this->options['via'] . '.' . $field;
@@ -1684,6 +1670,9 @@ class Query
             $results = $this->page($page, $listRows)->select();
         }
 
+        $this->removeOption('limit');
+        $this->removeOption('page');
+
         return $class::make($results, $listRows, $page, $total, $simple, $config);
     }
 
@@ -1801,13 +1790,13 @@ class Query
      * @param  array  $bind  参数绑定
      * @return $this
      */
-    public function orderRaw($field, array $bind = [])
+    public function orderRaw($field, $bind = [])
     {
-        $this->options['order'][] = $this->raw($field);
-
         if ($bind) {
-            $this->bind($bind);
+            $this->bindParams($field, $bind);
         }
+
+        $this->options['order'][] = $this->raw($field);
 
         return $this;
     }
@@ -1997,6 +1986,18 @@ class Query
     }
 
     /**
+     * 设置是否返回数据集对象（支持设置数据集对象类名）
+     * @access public
+     * @param  bool|string  $collection  是否返回数据集对象
+     * @return $this
+     */
+    public function fetchCollection($collection = true)
+    {
+        $this->options['collection'] = $collection;
+        return $this;
+    }
+
+    /**
      * 设置从主服务器读取数据
      * @access public
      * @return $this
@@ -2044,15 +2045,98 @@ class Query
     }
 
     /**
+     * 设置需要隐藏的输出属性
+     * @access public
+     * @param  mixed $hidden 需要隐藏的字段名
+     * @return $this
+     */
+    public function hidden($hidden)
+    {
+        if ($this->model) {
+            $this->options['hidden'] = $hidden;
+            return $this;
+        }
+
+        return $this->field($hidden, true);
+    }
+
+    /**
+     * 设置需要输出的属性
+     * @access public
+     * @param  array $visible 需要输出的属性
+     * @return $this
+     */
+    public function visible(array $visible)
+    {
+        $this->options['visible'] = $visible;
+        return $this;
+    }
+
+    /**
+     * 设置需要追加输出的属性
+     * @access public
+     * @param  array $append 需要追加的属性
+     * @return $this
+     */
+    public function append(array $append)
+    {
+        $this->options['append'] = $append;
+        return $this;
+    }
+
+    /**
+     * 设置数据字段获取器
+     * @access public
+     * @param  string|array $name       字段名
+     * @param  callable     $callback   闭包获取器
+     * @return $this
+     */
+    public function withAttr($name, $callback = null)
+    {
+        if (is_array($name)) {
+            $this->options['with_attr'] = $name;
+        } else {
+            $this->options['with_attr'][$name] = $callback;
+        }
+
+        return $this;
+    }
+
+    /**
      * 设置JSON字段信息
      * @access public
      * @param  array $json JSON字段
+     * @param  bool  $assoc 是否取出数组
      * @return $this
      */
-    public function json(array $json = [])
+    public function json(array $json = [], $assoc = false)
     {
-        $this->options['json'] = $json;
+        $this->options['json']       = $json;
+        $this->options['json_assoc'] = $assoc;
         return $this;
+    }
+
+    /**
+     * 设置字段类型信息
+     * @access public
+     * @param  array $type 字段类型信息
+     * @return $this
+     */
+    public function setJsonFieldType(array $type)
+    {
+        $this->options['field_type'] = $type;
+        return $this;
+    }
+
+    /**
+     * 获取字段类型信息
+     * @access public
+     * @param  string $field 字段名
+     * @return string|null
+     */
+    public function getJsonFieldType($field)
+    {
+        return isset($this->options['field_type'][$field]) ? $this->options['field_type'][$field] : null;
     }
 
     /**
@@ -2188,20 +2272,47 @@ class Query
     /**
      * 参数绑定
      * @access public
-     * @param mixed   $key   参数名
-     * @param mixed   $value 绑定变量值
-     * @param integer $type  绑定类型
-     * @return $this
+     * @param  mixed   $value 绑定变量值
+     * @param  integer $type  绑定类型
+     * @param  string  $name  绑定标识
+     * @return $this|string
      */
-    public function bind($key, $value = false, $type = PDO::PARAM_STR)
+    public function bind($value, $type = PDO::PARAM_STR, $name = null)
     {
-        if (is_array($key)) {
-            $this->bind = array_merge($this->bind, $key);
+        if (is_array($value)) {
+            $this->bind = array_merge($this->bind, $value);
         } else {
-            $this->bind[$key] = [$value, $type];
+            $name = $name ?: 'ThinkBind_' . (count($this->bind) + 1) . '_';
+
+            $this->bind[$name] = [$value, $type];
+            return $name;
         }
 
         return $this;
+    }
+
+    /**
+     * 参数绑定
+     * @access public
+     * @param  string $sql    绑定的sql表达式
+     * @param  array  $bind   参数绑定
+     * @return void
+     */
+    protected function bindParams(&$sql, array $bind = [])
+    {
+        foreach ($bind as $key => $value) {
+            if (is_array($value)) {
+                $name = $this->bind($value[0], $value[1], isset($value[2]) ? $value[2] : null);
+            } else {
+                $name = $this->bind($value);
+            }
+
+            if (is_numeric($key)) {
+                $sql = substr_replace($sql, ':' . $name, strpos($sql, '?'), 1);
+            } else {
+                $sql = str_replace(':' . $key, ':' . $name, $sql);
+            }
+        }
     }
 
     /**
@@ -2289,20 +2400,15 @@ class Query
         /** @var Model $class */
         $class = $this->model;
         foreach ($with as $key => $relation) {
-            $subRelation = '';
-            $closure     = false;
+            $closure = null;
 
             if ($relation instanceof \Closure) {
                 // 支持闭包查询过滤关联条件
-                $closure    = $relation;
-                $relation   = $key;
-                $with[$key] = $key;
+                $closure  = $relation;
+                $relation = $key;
             } elseif (is_array($relation)) {
-                $subRelation = $relation;
-                $relation    = $key;
+                $relation = $key;
             } elseif (is_string($relation) && strpos($relation, '.')) {
-                $with[$key] = $relation;
-
                 list($relation, $subRelation) = explode('.', $relation, 2);
             }
 
@@ -2311,18 +2417,99 @@ class Query
             $model    = $class->$relation();
 
             if ($model instanceof OneToOne && 0 == $model->getEagerlyType()) {
-                $model->removeOption()->eagerly($this, $relation, $subRelation, $closure, $first);
+                $table = $model->getTable();
+                $model->removeOption()
+                    ->table($table)
+                    ->eagerly($this, $relation, true, '', $closure, $first);
                 $first = false;
-            } elseif ($closure) {
-                $with[$key] = $closure;
             }
         }
+
         $this->via();
 
-        if (isset($this->options['with'])) {
-            $this->options['with'] = array_merge($this->options['with'], $with);
-        } else {
-            $this->options['with'] = $with;
+        $this->options['with'] = $with;
+
+        return $this;
+    }
+
+    /**
+     * 关联预载入 JOIN方式（不支持嵌套）
+     * @access protected
+     * @param  string|array $with 关联方法名
+     * @param  string       $joinType JOIN方式
+     * @return $this
+     */
+    public function withJoin($with, $joinType = '')
+    {
+        if (empty($with)) {
+            return $this;
+        }
+
+        if (is_string($with)) {
+            $with = explode(',', $with);
+        }
+
+        $first = true;
+
+        /** @var Model $class */
+        $class = $this->model;
+        foreach ($with as $key => $relation) {
+            $closure = null;
+            $field   = true;
+
+            if ($relation instanceof \Closure) {
+                // 支持闭包查询过滤关联条件
+                $closure  = $relation;
+                $relation = $key;
+            } elseif (is_array($relation)) {
+                $field    = $relation;
+                $relation = $key;
+            } elseif (is_string($relation) && strpos($relation, '.')) {
+                list($relation, $subRelation) = explode('.', $relation, 2);
+            }
+
+            /** @var Relation $model */
+            $relation = Db::parseName($relation, 1, false);
+            $model    = $class->$relation();
+
+            if ($model instanceof OneToOne) {
+                $model->eagerly($this, $relation, $field, $joinType, $closure, $first);
+                $first = false;
+            } else {
+                // 不支持其它关联
+                unset($with[$key]);
+            }
+        }
+
+        $this->via();
+
+        $this->options['with_join'] = $with;
+
+        return $this;
+    }
+
+    /**
+     * 使用搜索器条件搜索字段
+     * @access public
+     * @param  array    $fields     搜索字段
+     * @param  array    $data       搜索数据
+     * @param  string   $prefix     字段前缀标识
+     * @return $this
+     */
+    public function withSearch(array $fields, array $data = [], $prefix = '')
+    {
+        foreach ($fields as $key => $field) {
+            if ($field instanceof \Closure) {
+                $field($this, isset($data[$key]) ? $data[$key] : null, $data, $prefix);
+            } elseif ($this->model) {
+                // 检测搜索器
+                $fieldName = is_numeric($key) ? $field : $key;
+                $method    = 'search' . Db::parseName($fieldName, 1) . 'Attr';
+
+                if (method_exists($this->model, $method)) {
+                    $this->model->$method($this, isset($data[$field]) ? $data[$field] : null, $data, $prefix);
+                }
+            }
         }
 
         return $this;
@@ -2349,7 +2536,7 @@ class Query
             }
 
             foreach ($relations as $key => $relation) {
-                $closure = false;
+                $closure = null;
                 if ($relation instanceof \Closure) {
                     $closure  = $relation;
                     $relation = $key;
@@ -2678,33 +2865,9 @@ class Query
         // 数据列表读取后的处理
         if (!empty($this->model)) {
             // 生成模型对象
-            if (count($resultSet) > 0) {
-                foreach ($resultSet as $key => &$result) {
-                    // 数据转换为模型对象
-                    $this->resultToModel($result, $this->options, true);
-                }
-
-                if (!empty($this->options['with'])) {
-                    // 预载入
-                    $result->eagerlyResultSet($resultSet, $this->options['with']);
-                }
-
-                // 模型数据集转换
-                $resultSet = $result->toCollection($resultSet);
-            } else {
-                $resultSet = $this->model->toCollection($resultSet);
-            }
+            $resultSet = $this->resultSetToModelCollection($resultSet);
         } else {
-            if (!empty($this->options['json'])) {
-                foreach ($resultSet as &$result) {
-                    $this->jsonResult($result, $this->options['json'], true);
-                }
-            }
-
-            if ('collection' == $this->connection->getConfig('resultset_type')) {
-                // 返回Collection对象
-                $resultSet = new Collection($resultSet);
-            }
+            $this->resultSet($resultSet);
         }
 
         // 返回结果处理
@@ -2713,6 +2876,81 @@ class Query
         }
 
         return $resultSet;
+    }
+
+    /**
+     * 查询数据转换为模型数据集对象
+     * @access protected
+     * @param  array  $resultSet         数据集
+     * @return ModelCollection
+     */
+    protected function resultSetToModelCollection(array $resultSet)
+    {
+        if (!empty($this->options['collection']) && is_string($this->options['collection'])) {
+            $collection = $this->options['collection'];
+        }
+
+        if (empty($resultSet)) {
+            return $this->model->toCollection([], isset($collection) ? $collection : null);
+        }
+
+        // 检查动态获取器
+        if (!empty($this->options['with_attr'])) {
+            foreach ($this->options['with_attr'] as $name => $val) {
+                if (strpos($name, '.')) {
+                    list($relation, $field) = explode('.', $name);
+
+                    $withRelationAttr[$relation][$field] = $val;
+                    unset($this->options['with_attr'][$name]);
+                }
+            }
+        }
+
+        $withRelationAttr = isset($withRelationAttr) ? $withRelationAttr : [];
+
+        foreach ($resultSet as $key => &$result) {
+            // 数据转换为模型对象
+            $this->resultToModel($result, $this->options, true, $withRelationAttr);
+        }
+
+        if (!empty($this->options['with'])) {
+            // 预载入
+            $result->eagerlyResultSet($resultSet, $this->options['with'], $withRelationAttr);
+        }
+
+        if (!empty($this->options['with_join'])) {
+            // JOIN预载入
+            $result->eagerlyResultSet($resultSet, $this->options['with_join'], $withRelationAttr, true);
+        }
+
+        // 模型数据集转换
+        return $result->toCollection($resultSet, isset($collection) ? $collection : null);
+    }
+
+    /**
+     * 处理数据集
+     * @access public
+     * @param  array $resultSet
+     * @return void
+     */
+    protected function resultSet(&$resultSet)
+    {
+        if (!empty($this->options['json'])) {
+            foreach ($resultSet as &$result) {
+                $this->jsonResult($result, $this->options['json'], true);
+            }
+        }
+
+        if (!empty($this->options['with_attr'])) {
+            foreach ($resultSet as &$result) {
+                $this->getResultAttr($result, $this->options['with_attr']);
+            }
+        }
+
+        if (!empty($this->options['collection']) || 'collection' == $this->connection->getConfig('resultset_type')) {
+            // 返回Collection对象
+            $resultSet = new Collection($resultSet);
+        }
     }
 
     /**
@@ -2749,33 +2987,185 @@ class Query
         }
 
         // 数据处理
-        if (!empty($result)) {
-            if (!empty($this->model)) {
-                // 返回模型对象
-                $this->resultToModel($result, $this->options);
-            } elseif (!empty($this->options['json'])) {
-                $this->jsonResult($result, $this->options['json'], true);
-            }
-        } elseif (!empty($this->options['fail'])) {
-            $this->throwNotFound($this->options);
+        if (empty($result)) {
+            return $this->resultToEmpty();
+        }
+
+        if (!empty($this->model)) {
+            // 返回模型对象
+            $this->resultToModel($result, $this->options);
+        } else {
+            $this->result($result);
         }
 
         return $result;
     }
 
     /**
-     * JSON字段数据转换
+     * 处理空数据
+     * @access protected
+     * @return array|Model|null
+     * @throws DbException
+     * @throws ModelNotFoundException
+     * @throws DataNotFoundException
+     */
+    protected function resultToEmpty()
+    {
+        if (!empty($this->options['allow_empty'])) {
+            return !empty($this->model) ? $this->model->newInstance([], $this->getModelUpdateCondition($this->options)) : [];
+        } elseif (!empty($this->options['fail'])) {
+            $this->throwNotFound($this->options);
+        }
+    }
+
+    /**
+     * 查找单条记录
+     * @access public
+     * @param  mixed     $data  主键值或者查询条件（闭包）
+     * @param  mixed     $with  关联预查询
+     * @param  bool      $cache 是否缓存
+     * @param  bool      $failException 是否抛出异常
+     * @return static|null
+     * @throws exception\DbException
+     */
+    public function get($data, $with = [], $cache = false, $failException = false)
+    {
+        if (is_null($data)) {
+            return;
+        }
+
+        if (true === $with || is_int($with)) {
+            $cache = $with;
+            $with  = [];
+        }
+
+        return $this->parseQuery($data, $with, $cache)
+            ->failException($failException)
+            ->find($data);
+    }
+
+    /**
+     * 查找单条记录 如果不存在直接抛出异常
+     * @access public
+     * @param  mixed     $data  主键值或者查询条件（闭包）
+     * @param  mixed     $with  关联预查询
+     * @param  bool      $cache 是否缓存
+     * @return static|null
+     * @throws exception\DbException
+     */
+    public function getOrFail($data, $with = [], $cache = false)
+    {
+        return $this->get($data, $with, $cache, true);
+    }
+
+    /**
+     * 查找所有记录
+     * @access public
+     * @param  mixed        $data  主键列表或者查询条件（闭包）
+     * @param  array|string $with  关联预查询
+     * @param  bool         $cache 是否缓存
+     * @return static[]|false
+     * @throws exception\DbException
+     */
+    public function all($data = null, $with = [], $cache = false)
+    {
+        if (true === $with || is_int($with)) {
+            $cache = $with;
+            $with  = [];
+        }
+
+        return $this->parseQuery($data, $with, $cache)->select($data);
+    }
+
+    /**
+     * 分析查询表达式
+     * @access public
+     * @param  mixed  $data  主键列表或者查询条件（闭包）
+     * @param  string $with  关联预查询
+     * @param  bool   $cache 是否缓存
+     * @return Query
+     */
+    protected function parseQuery(&$data, $with, $cache)
+    {
+        $result = $this->with($with)->cache($cache);
+
+        if ((is_array($data) && key($data) !== 0) || $data instanceof Where) {
+            $result = $result->where($data);
+            $data   = null;
+        } elseif ($data instanceof \Closure) {
+            $data($result);
+            $data = null;
+        } elseif ($data instanceof Query) {
+            $result = $data->with($with)->cache($cache);
+            $data   = null;
+        }
+
+        return $result;
+    }
+
+    /**
+     * 处理数据
      * @access protected
      * @param  array $result     查询数据
-     * @param  array $json       JSON字段
-     * @param  bool  $assoc      是否转换为数组
      * @return void
      */
-    protected function jsonResult(&$result, $json = [], $assoc = false)
+    protected function result(&$result)
+    {
+        if (!empty($this->options['json'])) {
+            $this->jsonResult($result, $this->options['json'], true);
+        }
+
+        if (!empty($this->options['with_attr'])) {
+            $this->getResultAttr($result, $this->options['with_attr']);
+        }
+    }
+
+    /**
+     * 使用获取器处理数据
+     * @access protected
+     * @param  array $result     查询数据
+     * @param  array $withAttr   字段获取器
+     * @return void
+     */
+    protected function getResultAttr(&$result, $withAttr = [])
+    {
+        foreach ($withAttr as $name => $closure) {
+            $name = Db::parseName($name);
+
+            if (strpos($name, '.')) {
+                // 支持JSON字段 获取器定义
+                list($key, $field) = explode('.', $name);
+
+                if (isset($result[$key])) {
+                    $result[$key][$field] = $closure(isset($result[$key][$field]) ? $result[$key][$field] : null, $result[$key]);
+                }
+            } else {
+                $result[$name] = $closure(isset($result[$name]) ? $result[$name] : null, $result);
+            }
+        }
+    }
+
+    /**
+     * JSON字段数据转换
+     * @access protected
+     * @param  array $result            查询数据
+     * @param  array $json              JSON字段
+     * @param  bool  $assoc             是否转换为数组
+     * @param  array $withRelationAttr  关联获取器
+     * @return void
+     */
+    protected function jsonResult(&$result, $json = [], $assoc = false, $withRelationAttr = [])
     {
         foreach ($json as $name) {
             if (isset($result[$name])) {
                 $result[$name] = json_decode($result[$name], $assoc);
+
+                if (isset($withRelationAttr[$name])) {
+                    foreach ($withRelationAttr[$name] as $key => $closure) {
+                        $data                = get_object_vars($result[$name]);
+                        $result[$name]->$key = $closure(isset($result[$name]->$key) ? $result[$name]->$key : null, $data);
+                    }
+                }
             }
         }
     }
@@ -2783,28 +3173,60 @@ class Query
     /**
      * 查询数据转换为模型对象
      * @access public
-     * @param array $result     查询数据
-     * @param array $options    查询参数
-     * @param bool  $resultSet  是否为数据集查询
+     * @param  array $result     查询数据
+     * @param  array $options    查询参数
+     * @param  bool  $resultSet  是否为数据集查询
+     * @param  array $withRelationAttr  关联字段获取器
      * @return void
      */
-    protected function resultToModel(&$result, $options = [], $resultSet = false)
+    protected function resultToModel(&$result, $options = [], $resultSet = false, $withRelationAttr = [])
     {
-        if (!empty($options['json'])) {
-            $this->jsonResult($result, $options['json']);
+        if (!empty($options['with_attr']) && empty($withRelationAttr)) {
+            foreach ($options['with_attr'] as $name => $val) {
+                if (strpos($name, '.')) {
+                    list($relation, $field) = explode('.', $name);
+
+                    $withRelationAttr[$relation][$field] = $val;
+                    unset($options['with_attr'][$name]);
+                }
+            }
         }
 
-        $condition = (!$resultSet && isset($options['where']['AND'])) ? $options['where']['AND'] : null;
-        $result    = $this->model->newInstance($result, $condition);
+        if (!empty($options['json'])) {
+            $this->jsonResult($result, $options['json'], $options['json_assoc'], $withRelationAttr);
+        }
+
+        $result = $this->model->newInstance($result, $resultSet ? null : $this->getModelUpdateCondition($options));
+
+        // 动态获取器
+        if (!empty($options['with_attr'])) {
+            $result->withAttribute($options['with_attr']);
+        }
+
+        // 输出属性控制
+        if (!empty($options['visible'])) {
+            $result->visible($options['visible']);
+        } elseif (!empty($options['hidden'])) {
+            $result->hidden($options['hidden']);
+        }
+
+        if (!empty($options['append'])) {
+            $result->append($options['append']);
+        }
 
         // 关联查询
         if (!empty($options['relation'])) {
-            $result->relationQuery($options['relation']);
+            $result->relationQuery($options['relation'], $withRelationAttr);
         }
 
         // 预载入查询
         if (!$resultSet && !empty($options['with'])) {
-            $result->eagerlyResult($result, $options['with']);
+            $result->eagerlyResult($result, $options['with'], $withRelationAttr);
+        }
+
+        // JOIN预载入查询
+        if (!$resultSet && !empty($options['with_join'])) {
+            $result->eagerlyResult($result, $options['with_join'], $withRelationAttr, true);
         }
 
         // 关联统计
@@ -2813,6 +3235,16 @@ class Query
                 $result->relationCount($result, $val[0], $val[1], $val[2]);
             }
         }
+    }
+
+    /**
+     * 获取模型的更新条件
+     * @access protected
+     * @param  array $options 查询参数
+     */
+    protected function getModelUpdateCondition(array $options)
+    {
+        return isset($options['where']['AND']) ? $options['where']['AND'] : null;
     }
 
     /**
@@ -2859,6 +3291,20 @@ class Query
     public function findOrFail($data = null)
     {
         return $this->failException(true)->find($data);
+    }
+
+    /**
+     * 查找单条记录 如果不存在则抛出异常
+     * @access public
+     * @param  array|string|Query|\Closure $data
+     * @return array|\PDOStatement|string|Model
+     * @throws DbException
+     * @throws ModelNotFoundException
+     * @throws DataNotFoundException
+     */
+    public function findOrEmpty($data = null)
+    {
+        return $this->allowEmpty(true)->find($data);
     }
 
     /**
@@ -2963,6 +3409,10 @@ class Query
      */
     protected function parseView(&$options)
     {
+        if (!isset($options['map'])) {
+            return;
+        }
+
         foreach (['AND', 'OR'] as $logic) {
             if (isset($options['where'][$logic])) {
                 foreach ($options['where'][$logic] as $key => $val) {

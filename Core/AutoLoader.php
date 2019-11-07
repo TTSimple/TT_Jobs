@@ -15,6 +15,7 @@ class AutoLoader
     protected static $instance;
     /**
      * 对应每个命名空间的路径前缀配置
+     *
      * @var array
      */
     protected $prefixes = [];
@@ -41,10 +42,11 @@ class AutoLoader
     }
 
     /**
-     * @param string $prefix 名称空间前缀.
+     * @param string $prefix   名称空间前缀.
      * @param string $base_dir 对应的基础路径
-     * @param int $memorySecure
-     * @param bool $prepend 该路径是否优先搜索
+     * @param int    $memorySecure
+     * @param bool   $prepend  该路径是否优先搜索
+     *
      * @return $this
      */
     public function addNamespace($prefix, $base_dir, $memorySecure = 1, $prepend = false)
@@ -68,6 +70,7 @@ class AutoLoader
 
     /**
      * @param $class
+     *
      * @return bool|string
      */
     protected function loadClass($class)

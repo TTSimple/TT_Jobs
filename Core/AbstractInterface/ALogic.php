@@ -50,6 +50,7 @@ abstract class ALogic
 
     /**
      * @param string $actionName
+     *
      * @return LogicResponse
      */
     function call($actionName)

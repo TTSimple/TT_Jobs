@@ -50,15 +50,17 @@ abstract class ARESTController extends ABaseController
     function getPageData()
     {
         /* 分页 */
-        $page     = $this->request()->getQueryParam('page');
-        $limit    = $this->request()->getQueryParam('limit');
-        $isFirst  = $this->request()->getQueryParam('first');
+        $page    = $this->request()->getQueryParam('page');
+        $limit   = $this->request()->getQueryParam('limit');
+        $isFirst = $this->request()->getQueryParam('first');
+
         $pageParams = [
-            'page'     => (int) $page,
-            'limit'    => (int) $limit,
-            'start'    => (int) ($page-1)*$limit,
-            'is_first' => (int) $isFirst,
+            'page'     => (int)$page,
+            'limit'    => (int)$limit,
+            'start'    => (int)($page - 1) * $limit,
+            'is_first' => (int)$isFirst,
         ];
+
         return $pageParams;
     }
 
@@ -80,7 +82,7 @@ abstract class ARESTController extends ABaseController
         /*
          * restful中无需预防恶意调用控制器内置方法。
          */
-        $actionName = $this->request()->getMethod() .'_'. lcfirst($actionName);
+        $actionName = $this->request()->getMethod() . '_' . lcfirst($actionName);
         //执行onRequest事件
         $this->actionName($actionName);
         $this->onRequest($actionName);

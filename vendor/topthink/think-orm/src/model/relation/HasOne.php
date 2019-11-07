@@ -33,6 +33,10 @@ class HasOne extends OneToOne
         $this->localKey   = $localKey;
         $this->joinType   = 'INNER';
         $this->query      = (new $model)->db();
+
+        if (get_class($parent) == $model) {
+            $this->selfRelation = true;
+        }
     }
 
     /**
@@ -61,6 +65,26 @@ class HasOne extends OneToOne
         }
 
         return $relationModel;
+    }
+
+    /**
+     * 创建关联统计子查询
+     * @access public
+     * @param  \Closure $closure 闭包
+     * @param  string   $aggregate 聚合查询方法
+     * @param  string   $field 字段
+     * @return string
+     */
+    public function getRelationCountQuery($closure, $aggregate = 'count', $field = '*')
+    {
+        if ($closure) {
+            $closure($this->query);
+        }
+
+        return $this->query
+            ->whereExp($this->foreignKey, '=' . $this->parent->getTable() . '.' . $this->parent->getPk())
+            ->fetchSql()
+            ->$aggregate($field);
     }
 
     /**

@@ -12,9 +12,11 @@ namespace Core\Swoole\Process;
 use Core\Component\SysConst;
 use Core\Swoole\Memory\TableManager;
 use Core\Swoole\Server;
+use swoole_process;
 
 /**
  * Class AProcess
+ *
  * @package Core\Swoole\Process
  */
 abstract class AProcess
@@ -22,23 +24,24 @@ abstract class AProcess
     private $_processName;
     private $_swooleProcess;
     private $_tableKey;
-    private $_async = NULL;
-    private $_args = [];
+    private $_async = null;
+    private $_args  = [];
 
     /**
      * AProcess constructor.
-     * @param       $processName
-     * @param bool  $redirectStdinStdout 是否重定向标准输入输出
-     * @param array $args
-     * @param bool  $async
+     *
+     * @param string $processName
+     * @param bool   $redirectStdinStdout 是否重定向标准输入输出
+     * @param array  $args
+     * @param bool   $async
      */
-    function __construct($processName, $redirectStdinStdout = FALSE, array $args, $async = TRUE)
+    function __construct($processName, $redirectStdinStdout = false, array $args = [], $async = true)
     {
         $this->_async         = $async;
         $this->_args          = $args;
         $this->_processName   = $processName;
         $this->_tableKey      = md5($processName);
-        $this->_swooleProcess = new \swoole_process([$this, '__start'], $redirectStdinStdout, 2);
+        $this->_swooleProcess = new swoole_process([$this, '__start'], $redirectStdinStdout, 2);
         Server::getInstance()->getServer()->addProcess($this->_swooleProcess);
         if (\method_exists($this, 'initialize')) {
             $this->initialize($processName, $args, $async);
@@ -46,7 +49,7 @@ abstract class AProcess
     }
 
     /**
-     * @return \swoole_process
+     * @return swoole_process
      */
     public function getProcess()
     {
@@ -55,6 +58,7 @@ abstract class AProcess
 
     /**
      * 服务启动后才能获得到 pid
+     *
      * @return int|null
      */
     public function getPid()
@@ -66,7 +70,7 @@ abstract class AProcess
             if ($pid) {
                 return $pid['pid'];
             } else {
-                return NULL;
+                return null;
             }
         }
     }
@@ -89,6 +93,7 @@ abstract class AProcess
 
     /**
      * @param $key
+     *
      * @return mixed|null
      */
     public function getArg($key)
@@ -96,14 +101,14 @@ abstract class AProcess
         if (isset($this->_args[$key])) {
             return $this->_args[$key];
         } else {
-            return NULL;
+            return null;
         }
     }
 
     /**
-     * @param \swoole_process $process
+     * @param swoole_process $process
      */
-    function __start(\swoole_process $process)
+    function __start(swoole_process $process)
     {
         $processName = $this->getProcessName();
         if (PHP_OS != 'Darwin') {
@@ -113,7 +118,7 @@ abstract class AProcess
             $this->_tableKey, ['pid' => $this->_swooleProcess->pid]
         );
         ProcessManager::getInstance()->setProcess($processName, $this);
-        \swoole_process::signal(SIGTERM, function () use ($process) {
+        swoole_process::signal(SIGTERM, function () use ($process) {
             $this->onShutDown();
             TableManager::getInstance()->get(SysConst::PROCESS_HASH_MAP)->del($this->_tableKey);
             \swoole_event_del($process->pipe);
@@ -129,9 +134,9 @@ abstract class AProcess
     }
 
     /**
-     * @param \swoole_process $worker
+     * @param swoole_process $worker
      */
-    public abstract function run(\swoole_process $worker);
+    public abstract function run(swoole_process $worker);
 
     /**
      * @return mixed

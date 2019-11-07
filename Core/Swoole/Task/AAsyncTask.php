@@ -9,7 +9,7 @@ abstract class AAsyncTask
     private $dataForFinishCallBack;
     private $dataForTask;
 
-    function __construct($dataForTask = NULL)
+    function __construct($dataForTask = null)
     {
         $this->dataForTask = $dataForTask;
     }
@@ -48,9 +48,9 @@ abstract class AAsyncTask
      */
     abstract function finishCallBack(\swoole_server $server, $task_id, $resultData);
 
-    protected function finish($dataForFinishCallBack = NULL)
+    protected function finish($dataForFinishCallBack = null)
     {
-        if ($dataForFinishCallBack !== NULL) {
+        if ($dataForFinishCallBack !== null) {
             $this->dataForFinishCallBack = $dataForFinishCallBack;
         }
         //为何不用$this传递   避免handler中有释放资源类型被序列化出错

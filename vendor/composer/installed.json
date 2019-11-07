@@ -46,70 +46,24 @@
         ]
     },
     {
-        "name": "phpdr.net/php-curlmulti",
-        "version": "v4.2.2",
-        "version_normalized": "4.2.2.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/ares333/php-curl.git",
-            "reference": "434324e110526c2fc02235f737ba556eab2327fc"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/ares333/php-curl/zipball/434324e110526c2fc02235f737ba556eab2327fc",
-            "reference": "434324e110526c2fc02235f737ba556eab2327fc",
-            "shasum": ""
-        },
-        "require": {
-            "ext-curl": "*",
-            "php": ">=5.3.0"
-        },
-        "time": "2018-06-19T04:43:51+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "Ares333\\Curl\\": "src"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "Apache-2.0"
-        ],
-        "authors": [
-            {
-                "name": "Ares",
-                "homepage": "http://phpdr.net"
-            }
-        ],
-        "description": "The best php curl library.",
-        "keywords": [
-            "PHP cURL",
-            "aysnc http",
-            "curl",
-            "curlmulti"
-        ],
-        "abandoned": "ares333/php-curl"
-    },
-    {
         "name": "topthink/think-orm",
-        "version": "v1.2.8",
-        "version_normalized": "1.2.8.0",
+        "version": "v1.2.17",
+        "version_normalized": "1.2.17.0",
         "source": {
             "type": "git",
             "url": "https://github.com/top-think/think-orm.git",
-            "reference": "0faf0fed1fa897cc5836509ca37eafaa46d79b7b"
+            "reference": "979269850d4686324d1461c876d26e61bd75cff0"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/top-think/think-orm/zipball/0faf0fed1fa897cc5836509ca37eafaa46d79b7b",
-            "reference": "0faf0fed1fa897cc5836509ca37eafaa46d79b7b",
+            "url": "https://api.github.com/repos/top-think/think-orm/zipball/979269850d4686324d1461c876d26e61bd75cff0",
+            "reference": "979269850d4686324d1461c876d26e61bd75cff0",
             "shasum": ""
         },
         "require": {
             "php": ">=5.6.0"
         },
-        "time": "2018-06-03T06:55:52+00:00",
+        "time": "2019-01-29T03:56:09+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {
@@ -133,62 +87,24 @@
         "description": "think orm"
     },
     {
-        "name": "topthink/think-template",
-        "version": "v1.0.1",
-        "version_normalized": "1.0.1.0",
-        "source": {
-            "type": "git",
-            "url": "https://github.com/top-think/think-template.git",
-            "reference": "4437741ca41fe99452d1b667df242cd8ca63120c"
-        },
-        "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/top-think/think-template/zipball/4437741ca41fe99452d1b667df242cd8ca63120c",
-            "reference": "4437741ca41fe99452d1b667df242cd8ca63120c",
-            "shasum": ""
-        },
-        "require": {
-            "php": ">=5.6.0"
-        },
-        "time": "2018-04-20T05:41:47+00:00",
-        "type": "library",
-        "installation-source": "dist",
-        "autoload": {
-            "psr-4": {
-                "think\\": "src"
-            }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-            "Apache-2.0"
-        ],
-        "authors": [
-            {
-                "name": "liu21st",
-                "email": "liu21st@gmail.com"
-            }
-        ],
-        "description": "the php template engine"
-    },
-    {
         "name": "topthink/think-validate",
-        "version": "1.0.1",
-        "version_normalized": "1.0.1.0",
+        "version": "v1.0.2",
+        "version_normalized": "1.0.2.0",
         "source": {
             "type": "git",
             "url": "https://github.com/top-think/think-validate.git",
-            "reference": "2fd2f1305b0d013f235679bfcb398a37d400b0e5"
+            "reference": "6422f1a9c68996dd66171a28a15506aeee139b89"
         },
         "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/top-think/think-validate/zipball/2fd2f1305b0d013f235679bfcb398a37d400b0e5",
-            "reference": "2fd2f1305b0d013f235679bfcb398a37d400b0e5",
+            "url": "https://api.github.com/repos/top-think/think-validate/zipball/6422f1a9c68996dd66171a28a15506aeee139b89",
+            "reference": "6422f1a9c68996dd66171a28a15506aeee139b89",
             "shasum": ""
         },
         "require": {
             "php": ">=5.6.0"
         },
-        "time": "2017-11-17T03:58:39+00:00",
+        "time": "2018-03-09T09:48:11+00:00",
         "type": "library",
         "installation-source": "dist",
         "autoload": {

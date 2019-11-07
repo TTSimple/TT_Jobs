@@ -16,6 +16,7 @@ use Core\Swoole\Server;
 
 /**
  * Class ProcessManager
+ *
  * @package Core\Swoole\Process
  */
 class ProcessManager
@@ -38,8 +39,8 @@ class ProcessManager
             SysConst::PROCESS_HASH_MAP, [
             'pid' => [
                 'type' => \swoole_table::TYPE_INT,
-                'size' => 10
-            ]
+                'size' => 10,
+            ],
         ], 256
         );
     }
@@ -50,32 +51,34 @@ class ProcessManager
      * @param bool   $redirectStdinStdout
      * @param array  $args
      * @param bool   $async
+     *
      * @return bool
      */
-    public function addProcess($processName, $processClass, $redirectStdinStdout = FALSE, array $args = [], $async = TRUE)
+    public function addProcess($processName, $processClass, $redirectStdinStdout = false, array $args = [], $async = true)
     {
-        if (Server::SERVER_NOT_START === Server::getInstance()->isStart()) {
+        if (Server::SERVER_STARTED === Server::getInstance()->isStart()) {
             trigger_error("you can not add a process {$processName}.{$processClass} after server start");
-            return FALSE;
+            return false;
         }
         $key = md5($processName);
         if (!isset($this->_processList[$key])) {
             try {
                 $process                  = new $processClass($processName, $redirectStdinStdout, $args, $async);
                 $this->_processList[$key] = $process;
-                return TRUE;
+                return true;
             } catch (\Throwable $throwable) {
                 Trigger::error($throwable);
-                return FALSE;
+                return false;
             }
         } else {
             trigger_error("you can not add the same name process : {$processName}.{$processClass}");
-            return FALSE;
+            return false;
         }
     }
 
     /**
-     * @param $processName
+     * @param string $processName
+     *
      * @return bool
      */
     public function removeProcessByName($processName)
@@ -84,11 +87,12 @@ class ProcessManager
             $pid = $process->getPid();
             $this->removeProcessByPid($pid);
         }
-        return TRUE;
+        return true;
     }
 
     /**
-     * @param $pid
+     * @param int $pid
+     *
      * @return bool
      */
     public function removeProcessByPid($pid)
@@ -97,16 +101,17 @@ class ProcessManager
             $this->_removeInTable($process);
             if (\swoole_process::kill($pid, 0)) {
                 $process->getProcess()->exit(0);
-                while ($ret = \swoole_process::wait(FALSE)) {
+                while ($ret = \swoole_process::wait(false)) {
 //                    echo "PID={$ret['pid']}\n";
                 }
             }
         }
-        return TRUE;
+        return true;
     }
 
     /**
-     * @param $processName
+     * @param string $processName
+     *
      * @return AProcess|null
      */
     public function getProcessByName($processName)
@@ -115,12 +120,13 @@ class ProcessManager
         if (isset($this->_processList[$key])) {
             return $this->_processList[$key];
         } else {
-            return NULL;
+            return null;
         }
     }
 
     /**
-     * @param $pid
+     * @param int $pid
+     *
      * @return AProcess|null
      */
     public function getProcessByPid($pid)
@@ -131,12 +137,12 @@ class ProcessManager
                 return $this->_processList[$key];
             }
         }
-        return NULL;
+        return null;
     }
 
     /**
-     * @param $processName
-     * @param $process
+     * @param string $processName
+     * @param        $process
      */
     public function setProcess($processName, $process)
     {
@@ -145,21 +151,23 @@ class ProcessManager
     }
 
     /**
-     * @param $processName
+     * @param string $processName
+     *
      * @return bool
      */
     public function reboot($processName)
     {
         if ($process = $this->getProcessByName($processName)) {
             \swoole_process::kill($process->getPid(), SIGTERM);
-            return TRUE;
+            return true;
         } else {
-            return FALSE;
+            return false;
         }
     }
 
     /**
-     * @param $processName
+     * @param string $processName
+     *
      * @return bool
      */
     public function kill($processName)
@@ -168,18 +176,19 @@ class ProcessManager
             $pid = $process->getPid();
             if (\swoole_process::kill($pid, 0)) {
                 \swoole_process::kill($pid);
-                while ($ret = \swoole_process::wait(FALSE)) {
+                while ($ret = \swoole_process::wait(false)) {
 //                    echo "PID={$ret['pid']}\n";
                 }
             }
             $this->_removeInTable($process);
         }
-        return TRUE;
+        return true;
     }
 
     /**
-     * @param $name
-     * @param $data
+     * @param string $name
+     * @param mixed  $data
+     *
      * @return bool
      */
     public function writeByProcessName($name, $data)
@@ -187,13 +196,14 @@ class ProcessManager
         if ($process = $this->getProcessByName($name)) {
             return (bool)$process->getProcess()->write($data);
         } else {
-            return FALSE;
+            return false;
         }
     }
 
     /**
-     * @param       $name
-     * @param float $timeOut
+     * @param string $name
+     * @param float  $timeOut
+     *
      * @return null|string
      */
     public function readByProcessName($name, $timeOut = 0.1)
@@ -207,10 +217,10 @@ class ProcessManager
             if ($ret) {
                 return $process->read(64 * 1024);
             } else {
-                return NULL;
+                return null;
             }
         } else {
-            return NULL;
+            return null;
         }
     }
 

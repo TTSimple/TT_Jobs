@@ -14,6 +14,7 @@ namespace think\db\builder;
 use think\db\Builder;
 use think\db\Expression;
 use think\db\Query;
+use think\Exception;
 
 /**
  * mysql数据库驱动
@@ -60,8 +61,8 @@ class Mysql extends Builder
         // 获取绑定信息
         $bind = $this->connection->getFieldsBind($options['table']);
 
-        foreach ($dataSet as $k => $data) {
-            $data = $this->parseData($query, $data, $allowFields, $bind, '_' . $k);
+        foreach ($dataSet as $data) {
+            $data = $this->parseData($query, $data, $allowFields, $bind);
 
             $values[] = '( ' . implode(',', array_values($data)) . ' )';
 
@@ -138,6 +139,10 @@ class Mysql extends Builder
             if (isset($alias[$table])) {
                 $table = $alias[$table];
             }
+        }
+
+        if ($strict && !preg_match('/^[\w\.\*]+$/', $key)) {
+            throw new Exception('not support data:' . $key);
         }
 
         if ('*' != $key && ($strict || !preg_match('/[,\'\"\*\(\)`.\s]/', $key))) {

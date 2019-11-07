@@ -24,8 +24,8 @@ define(['backbone', 'mu/cache', 'com/tr'], function (Backbone, cache, Tr) {
             this.right_opt = options.right_options || ''; // 自定义操作
             this.color = options.color || 'default'; // 颜色
             this.width = options.width || ''; // td宽度 数组或对象 width: ['field|50%']   other_field 为指定其他字段的宽度
-            this.isCheck = options.isCheck === false ? false : true; // 是否需要多选
-            this.isHeader = options.isHeader === false ? false : true; // 是否需要多选
+            this.isCheck = options.isCheck !== false; // 是否需要多选
+            this.isHeader = options.isHeader !== false; // 是否需要多选
             this.replace = options.replace || ''; // 字段文字替换
             this.fields = this.collection._option.fields || ''; // 表头字段
             this.o_field = options.other_field || ''; // 其他表头字段
@@ -33,7 +33,7 @@ define(['backbone', 'mu/cache', 'com/tr'], function (Backbone, cache, Tr) {
             this.limit = options.limit || 10; // 默认展示数据量
             this.button = options.button || ''; // button
             this.fn = options.fn || ''; // 数据处理函数 fn: {field: 'field',fn: 'date|yyyy-MM'}] 或者  fn:[{field: 'field',fn: 'date|yyyy-MM'}]
-            this.needDelete = options.needDelete === true ? true : false;
+            this.needDelete = options.needDelete === true;
             this.loadMore = options.loadMore || '';
 
             _.bindAll(this, 'init');

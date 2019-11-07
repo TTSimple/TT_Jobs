@@ -9,6 +9,8 @@
 namespace Core\Swoole;
 
 
+use Closure;
+
 class Timer
 {
     /*
@@ -19,29 +21,31 @@ class Timer
         $microSeconds 最大不得超过 86400000 毫秒
      */
     /**
-     * @param          $microSeconds
-     * @param \Closure $func
-     * @param null     $args
+     * @param int     $microSeconds
+     * @param Closure $func
+     * @param null    $args
+     *
      * @return int
      */
-    static function loop($microSeconds, \Closure $func, $args = NULL)
+    static function loop($microSeconds, Closure $func, $args = null)
     {
         return Server::getInstance()->getServer()->tick($microSeconds, $func, $args);
     }
 
     /**
-     * @param          $microSeconds
-     * @param \Closure $func
-     * @param null     $args
+     * @param int     $microSeconds
+     * @param Closure $func
+     * @param null    $args
+     *
      * @return int
      */
-    static function delay($microSeconds, \Closure $func, $args = NULL)
+    static function delay($microSeconds, Closure $func, $args = null)
     {
         return Server::getInstance()->getServer()->after($microSeconds, $func, $args);
     }
 
     /**
-     * @param $timerId
+     * @param int $timerId
      */
     static function clear($timerId)
     {

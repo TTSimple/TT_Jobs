@@ -5,7 +5,8 @@
 .idea/modules.xml
 .idea/workspace.xml
 .idea/vcs.xml
+vendor/*
 composer.lock
+App/Jobs/Conf/config.ini
+App/Jobs/Conf/dev.php
 sftp-config.json
-App/Cron/Conf/config.ini
-App/Cron/Conf/env/*

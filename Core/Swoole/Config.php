@@ -12,19 +12,19 @@ use Core\Conf\Config as GlobalConf;
 
 class Config
 {
-    const SERVER_TYPE_SERVER = 'SERVER_TYPE_SERVER';
-    const SERVER_TYPE_WEB = 'SERVER_TYPE_WEB';
+    const SERVER_TYPE_SERVER     = 'SERVER_TYPE_SERVER';
+    const SERVER_TYPE_WEB        = 'SERVER_TYPE_WEB';
     const SERVER_TYPE_WEB_SOCKET = 'SERVER_TYPE_WEB_SOCKET';
 
-    private $listenIp;
-    private $listenPort;
-    private $workerSetting;
-    private $workerNum;
-    private $taskWorkerNum;
-    private $serverName;
-    private $runMode;
-    private $serverType;
-    private $socketType;
+    private        $listenIp;
+    private        $listenPort;
+    private        $workerSetting;
+    private        $workerNum;
+    private        $taskWorkerNum;
+    private        $serverName;
+    private        $runMode;
+    private        $serverType;
+    private        $socketType;
     private static $instance;
 
     static function getInstance()

@@ -13,6 +13,7 @@ use Core\Component\Logger;
 
 /**
  * Class AutoReload
+ *
  * @package Core\Swoole
  */
 class AutoReload
@@ -23,22 +24,24 @@ class AutoReload
     private $_inotify;
     private $_serverPid;
 
-    private $_reloadFileTypes = ['.php' => TRUE];
-    private $_watchingFiles = [];
-    private $_rootDirs = [];
+    private $_reloadFileTypes  = ['.php' => true];
+    private $_watchingFiles    = [];
+    private $_rootDirs         = [];
     private $_afterSomeSeconds = 10;
     private $_events;
 
-    private $_reloading = FALSE;
+    private $_reloading = false;
 
     /**
      * AutoReload constructor.
+     *
      * @param $serverPid
      */
-    function __construct($serverPid = NULL)
+    function __construct($serverPid = null)
     {
         if (!extension_loaded('inotify')) {
-            exit("Please install inotify extension.\n");
+            return false;
+//            exit("Please install inotify extension.\n");
         }
         $this->_serverPid = $serverPid;
 //        if (\posix_kill($serverPid, 0) === FALSE) {
@@ -60,8 +63,7 @@ class AutoReload
                     IN_DELETE == $event['mask'] or
                     IN_MODIFY == $event['mask'] or
                     IN_MOVED_TO == $event['mask'] or
-                    IN_MOVED_FROM == $event['mask'])
-                {
+                    IN_MOVED_FROM == $event['mask']) {
                     $fileType = strrchr($event['name'], '.');
                     if (!isset($this->_reloadFileTypes[$fileType])) { //非重启类型
                         continue;
@@ -69,8 +71,8 @@ class AutoReload
                 }
                 if (!$this->_reloading) { // 正在reload，不再接受任何事件，冻结10秒
                     Logger::getInstance()->log("after 10 seconds reload the server");
-                    \swoole_timer_after($this->_afterSomeSeconds * 1000, array($this, 'reload')); //有事件发生了，进行重启
-                    $this->_reloading = TRUE;
+                    \swoole_timer_after($this->_afterSomeSeconds * 1000, [$this, 'reload']); //有事件发生了，进行重启
+                    $this->_reloading = true;
                 }
             }
         });
@@ -87,21 +89,23 @@ class AutoReload
         foreach ($this->_rootDirs as $root) { // 重新监听
             $this->watch($root);
         }
-        $this->_reloading = FALSE; // 继续进行reload
+        $this->_reloading = false; // 继续进行reload
     }
 
     /**
      * 添加文件类型
+     *
      * @param $type
      */
     function addFileType($type)
     {
         $type                                = trim($type, '.');
-        $this->_reloadFileTypes['.' . $type] = TRUE;
+        $this->_reloadFileTypes['.' . $type] = true;
     }
 
     /**
      * 添加事件
+     *
      * @param $inotifyEvent
      */
     function addEvent($inotifyEvent)
@@ -123,15 +127,16 @@ class AutoReload
     /**
      * @param      $dir
      * @param bool $root
+     *
      * @return bool
      */
-    function watch($dir, $root = TRUE)
+    function watch($dir, $root = true)
     {
         if (!\is_dir($dir)) { //目录不存在
             Trigger::error("[{$dir}] is not a directory.");
         }
         if (isset($this->_watchingFiles[$dir])) { //避免重复监听
-            return FALSE;
+            return false;
         }
         if ($root) { //根目录
             $this->_rootDirs[] = $dir;
@@ -144,14 +149,14 @@ class AutoReload
             }
             $path = $dir . '/' . $file;
             if (\is_dir($path)) { // 递归目录
-                $this->watch($path, FALSE);
+                $this->watch($path, false);
             }
             $fileType = \strrchr($file, '.'); // 检测文件类型
             if (isset($this->_reloadFileTypes[$fileType])) {
                 $this->_watchingFiles[$path] = \inotify_add_watch($this->_inotify, $path, $this->_events);
             }
         }
-        return TRUE;
+        return true;
     }
 
     function run()

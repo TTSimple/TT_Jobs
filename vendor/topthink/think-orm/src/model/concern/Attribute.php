@@ -42,6 +42,12 @@ trait Attribute
     protected $jsonType = [];
 
     /**
+     * JSON数据取出是否需要转换为数组
+     * @var bool
+     */
+    protected $jsonAssoc = false;
+
+    /**
      * 数据表废弃字段
      * @var array
      */
@@ -72,6 +78,18 @@ trait Attribute
     private $origin = [];
 
     /**
+     * 修改器执行记录
+     * @var array
+     */
+    private $set = [];
+
+    /**
+     * 动态获取器
+     * @var array
+     */
+    private $withAttr = [];
+
+    /**
      * 获取模型对象的主键
      * @access public
      * @return string|array
@@ -97,6 +115,21 @@ trait Attribute
         }
 
         return false;
+    }
+
+    /**
+     * 获取模型对象的主键值
+     * @access public
+     * @return integer
+     */
+    public function getKey()
+    {
+        $pk = $this->getPk();
+        if (is_string($pk) && array_key_exists($pk, $this->data)) {
+            return $this->data[$pk];
+        }
+
+        return;
     }
 
     /**
@@ -262,10 +295,14 @@ trait Attribute
      * @param string $name  属性名
      * @param mixed  $value 属性值
      * @param array  $data  数据
-     * @return $this
+     * @return void
      */
     public function setAttr($name, $value, $data = [])
     {
+        if (isset($this->set[$name])) {
+            return;
+        }
+
         $isRelationData = false;
 
         if (is_null($value) && $this->autoWriteTimestamp && in_array($name, [$this->createTime, $this->updateTime])) {
@@ -285,8 +322,7 @@ trait Attribute
 
         // 设置数据对象属性
         $this->data[$name] = $value;
-
-        return $this;
+        $this->set[$name]  = true;
     }
 
     /**
@@ -321,7 +357,8 @@ trait Attribute
                 case 'datetime':
                 case 'date':
                     $format = !empty($param) ? $param : $this->dateFormat;
-                    $value  = $this->formatDateTime(time(), $format);
+                    $format .= strpos($format, 'u') || false !== strpos($format, '\\') ? '' : '.u';
+                    $value = $this->formatDateTime($format);
                     break;
                 case 'timestamp':
                 case 'integer':
@@ -334,9 +371,10 @@ trait Attribute
             'date',
             'timestamp',
         ])) {
-            $value = $this->formatDateTime(time(), $this->dateFormat);
+            $format = strpos($this->dateFormat, 'u') || false !== strpos($this->dateFormat, '\\') ? '' : '.u';
+            $value  = $this->formatDateTime($this->dateFormat . $format);
         } else {
-            $value = $this->formatDateTime(time(), $this->dateFormat, true);
+            $value = time();
         }
 
         return $value;
@@ -383,7 +421,7 @@ trait Attribute
             case 'datetime':
                 $format = !empty($param) ? $param : $this->dateFormat;
                 $value  = is_numeric($value) ? $value : strtotime($value);
-                $value  = $this->formatDateTime($value, $format);
+                $value  = $this->formatDateTime($format, $value);
                 break;
             case 'object':
                 if (is_object($value)) {
@@ -423,9 +461,18 @@ trait Attribute
         }
 
         // 检测属性获取器
-        $method = 'get' . Db::parseName($name, 1) . 'Attr';
+        $fieldName = Db::parseName($name);
+        $method    = 'get' . Db::parseName($name, 1) . 'Attr';
 
-        if (method_exists($this, $method)) {
+        if (isset($this->withAttr[$fieldName])) {
+            if ($notFound && $relation = $this->isRelationAttr($name)) {
+                $modelRelation = $this->$relation();
+                $value         = $this->getRelationData($modelRelation);
+            }
+
+            $closure = $this->withAttr[$fieldName];
+            $value   = $closure($value, $this->data);
+        } elseif (method_exists($this, $method)) {
             if ($notFound && $relation = $this->isRelationAttr($name)) {
                 $modelRelation = $this->$relation();
                 $value         = $this->getRelationData($modelRelation);
@@ -435,47 +482,61 @@ trait Attribute
         } elseif (isset($this->type[$name])) {
             // 类型转换
             $value = $this->readTransform($value, $this->type[$name]);
-        } elseif (in_array($name, [$this->createTime, $this->updateTime])) {
+        } elseif ($this->autoWriteTimestamp && in_array($name, [$this->createTime, $this->updateTime])) {
             if (is_string($this->autoWriteTimestamp) && in_array(strtolower($this->autoWriteTimestamp), [
                 'datetime',
                 'date',
                 'timestamp',
             ])) {
-                $value = $this->formatDateTime(strtotime($value), $this->dateFormat);
+                $value = $this->formatDateTime($this->dateFormat, $value);
             } else {
-                $value = $this->formatDateTime($value, $this->dateFormat);
+                $value = $this->formatDateTime($this->dateFormat, $value, true);
             }
         } elseif ($notFound) {
-            $relation = $this->isRelationAttr($name);
-
-            if ($relation) {
-                $modelRelation = $this->$relation();
-                if ($modelRelation instanceof Relation) {
-                    $value = $this->getRelationData($modelRelation);
-
-                    if ($item && method_exists($modelRelation, 'getBindAttr') && $bindAttr = $modelRelation->getBindAttr()) {
-
-                        foreach ($bindAttr as $key => $attr) {
-                            $key = is_numeric($key) ? $attr : $key;
-
-                            if (isset($item[$key])) {
-                                throw new Exception('bind attr has exists:' . $key);
-                            } else {
-                                $item[$key] = $value ? $value->getAttr($attr) : null;
-                            }
-                        }
-                        return false;
-                    }
-
-                    // 保存关联对象值
-                    $this->relation[$name] = $value;
-
-                    return $value;
-                }
-            }
-            throw new InvalidArgumentException('property not exists:' . static::class . '->' . $name);
+            $value = $this->getRelationAttribute($name, $item);
         }
         return $value;
+    }
+
+    /**
+     * 获取关联属性值
+     * @access protected
+     * @param  string   $name  属性名
+     * @param  array    $item  数据
+     * @return mixed
+     */
+    protected function getRelationAttribute($name, &$item)
+    {
+        $relation = $this->isRelationAttr($name);
+
+        if ($relation) {
+            $modelRelation = $this->$relation();
+            if ($modelRelation instanceof Relation) {
+                $value = $this->getRelationData($modelRelation);
+
+                if ($item && method_exists($modelRelation, 'getBindAttr') && $bindAttr = $modelRelation->getBindAttr()) {
+
+                    foreach ($bindAttr as $key => $attr) {
+                        $key = is_numeric($key) ? $attr : $key;
+
+                        if (isset($item[$key])) {
+                            throw new Exception('bind attr has exists:' . $key);
+                        } else {
+                            $item[$key] = $value ? $value->getAttr($attr) : null;
+                        }
+                    }
+
+                    return false;
+                }
+
+                // 保存关联对象值
+                $this->relation[$name] = $value;
+
+                return $value;
+            }
+        }
+
+        throw new InvalidArgumentException('property not exists:' . static::class . '->' . $name);
     }
 
     /**
@@ -514,13 +575,13 @@ trait Attribute
             case 'timestamp':
                 if (!is_null($value)) {
                     $format = !empty($param) ? $param : $this->dateFormat;
-                    $value  = $this->formatDateTime($value, $format);
+                    $value  = $this->formatDateTime($format, $value, true);
                 }
                 break;
             case 'datetime':
                 if (!is_null($value)) {
                     $format = !empty($param) ? $param : $this->dateFormat;
-                    $value  = $this->formatDateTime(strtotime($value), $format);
+                    $value  = $this->formatDateTime($format, $value);
                 }
                 break;
             case 'json':
@@ -545,4 +606,27 @@ trait Attribute
         return $value;
     }
 
+    /**
+     * 设置数据字段获取器
+     * @access public
+     * @param  string|array $name       字段名
+     * @param  callable     $callback   闭包获取器
+     * @return $this
+     */
+    public function withAttribute($name, $callback = null)
+    {
+        if (is_array($name)) {
+            foreach ($name as $key => $val) {
+                $key = Db::parseName($key);
+
+                $this->withAttr[$key] = $val;
+            }
+        } else {
+            $name = Db::parseName($name);
+
+            $this->withAttr[$name] = $callback;
+        }
+
+        return $this;
+    }
 }

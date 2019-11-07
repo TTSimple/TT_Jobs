@@ -1,19 +1,56 @@
-# cron
+## 环境要求
 
-### 1：
+- php >= 5.6
+- swoole >= 1.9.23
 
-`config.ini` 放到 `App/Cron/Conf` 里面
+## 配置
 
-### 2：
+1. 修改 `App/Jobs/Conf` 目录下配置
 
-给 `App/Cron/Runtime` 目录可写权限
-
-### 3：
-
-切换到 `699pic_cron` 目录下
-
-执行命令
-
-```$xslt
-php App/Cron/bin/swoole_server start --d
 ```
+App/Jobs/Conf/config.ini    # 指定当前环境
+App/Jobs/Conf/dev.php       # 开发环境配置
+App/Jobs/Conf/pro.php       # 生产环境配置
+```
+
+2. `App/Jobs/Runtime` 目录可写权限
+
+3. 导入 `App/Jobs/Schemas/tt_jobs.sql` 表结构 
+
+## 运行
+
+```
+php App/Jobs/bin/server start --d
+```
+
+浏览器访问 http://localhost:9501
+
+```
+admin: admin    # 管理员
+demo: demo      # demo
+```
+
+## 注意事项
+
+swoole >= 4.3.0 需要安装 [swoole Async 模块](https://github.com/swoole/ext-async)
+
+```
+git clone https://github.com/swoole/ext-async.git
+cd ext-async
+git checkout v.4.4.7 # 切换版本至 swoole 相同版本
+phpize
+./configure
+make -j 4
+sudo make install
+```
+
+
+
+## TODO
+
+- [ ] 全局常量
+- [ ] 一键迁移 crontab
+
+## v2.0 TODO
+
+- [ ] 分布式

@@ -12,7 +12,7 @@ abstract class ARouter
 {
     protected $isCache = false;
     protected $cacheFile;
-    private $routeCollector;
+    private   $routeCollector;
 
     function __construct()
     {

@@ -20,7 +20,7 @@ return [
     ],
     'SWOOLE'                 => [
         "SERVER" => [
-            "LISTEN"          => "10.25.49.155",
+            "LISTEN"          => "192.168.14.61",
             'PORT'            => 9501,
             "SERVER_NAME"     => "jobs",
             "RUN_MODE"        => SWOOLE_PROCESS,    //不建议更改此项

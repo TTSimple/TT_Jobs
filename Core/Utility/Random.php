@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: YF
- * Date: 16/9/5
- * Time: 下午8:40
- */
 
 namespace Core\Utility;
 

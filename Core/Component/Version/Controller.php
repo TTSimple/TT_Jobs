@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/11/22
- * Time: 下午9:52
- */
 
 namespace Core\Component\Version;
 
@@ -16,11 +10,11 @@ use FastRoute\Dispatcher;
 class Controller
 {
     private static $instance;
-    private $versionList = null;
+    private        $versionList = null;
 
     static function getInstance($versionRegisterClass)
     {
-        if (!isset(self::$instance)) {
+        if (! isset(self::$instance)) {
             self::$instance = new static($versionRegisterClass);
         }
         return self::$instance;

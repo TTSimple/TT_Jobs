@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/9/10
- * Time: 下午5:30
- */
 
 namespace Core\Component;
 
@@ -14,14 +8,15 @@ use Core\Component\Spl\SplArray;
 
 class ShareMemory
 {
-    private $file;
-    private $fileStream;
+    private        $file;
+    private        $fileStream;
     private static $instance;
-    private $ioTimeOut = 200000;
-    private $isStartTransaction = false;
-    private $data = null;
-    private $serializeType;
-    const SERIALIZE_TYPE_JSON = 'SERIALIZE_TYPE_JSON';
+    private        $ioTimeOut          = 200000;
+    private        $isStartTransaction = false;
+    private        $data               = null;
+    private        $serializeType;
+
+    const SERIALIZE_TYPE_JSON      = 'SERIALIZE_TYPE_JSON';
     const SERIALIZE_TYPE_SERIALIZE = 'SERIALIZE_TYPE_SERIALIZE';
 
     /*
@@ -44,7 +39,7 @@ class ShareMemory
      */
     static function getInstance($serializeType = self::SERIALIZE_TYPE_JSON, $file = null)
     {
-        if (!isset(self::$instance)) {
+        if (! isset(self::$instance)) {
             self::$instance = new static($serializeType, $file);
         }
         return self::$instance;
@@ -65,7 +60,7 @@ class ShareMemory
                 //是否阻塞
                 if ($this->ioTimeOut) {
                     $takeTime = 0;
-                    while (!$this->fileStream->lock(LOCK_EX | LOCK_NB)) {
+                    while (! $this->fileStream->lock(LOCK_EX | LOCK_NB)) {
                         if ($takeTime > $this->ioTimeOut) {
                             $this->fileStream->close();
                             unset($this->fileStream);
@@ -196,10 +191,10 @@ class ShareMemory
         if ($this->isStartTransaction) {
             $data = $this->fileStream->getContents();
             if ($this->serializeType == self::SERIALIZE_TYPE_JSON) {
-                $data = json_decode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+                $data       = json_decode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
                 $this->data = is_array($data) ? new SplArray($data) : new SplArray();
             } else {
-                $data = unserialize($data);
+                $data       = unserialize($data);
                 $this->data = is_a($data, SplArray::class) ? $data : new SplArray();
             }
             return true;

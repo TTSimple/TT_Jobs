@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/10/23
- * Time: 下午5:35
- */
 
 namespace Core\Component\RPC\Client;
 
@@ -13,6 +7,7 @@ use Core\Component\RPC\AbstractInterface\APackageParser;
 use Core\Component\RPC\Common\Config;
 use Core\Component\RPC\Common\Package;
 use Core\Component\Socket\Client\TcpClient;
+use Exception;
 
 class Client
 {
@@ -21,19 +16,20 @@ class Client
 
     /**
      * @param Config $conf
+     *
      * @return CallList|mixed
-     * @throws \Exception
+     * @throws Exception
      */
     function selectServer(Config $conf)
     {
         if (empty($conf->getHost())) {
-            throw new \Exception("rpc host error @" . $conf->getHost());
+            throw new Exception("rpc host error @" . $conf->getHost());
         }
         if (empty($conf->getPort())) {
-            throw new \Exception("rpc host port error @" . $conf->getPort());
+            throw new Exception("rpc host port error @" . $conf->getPort());
         }
         if (empty($conf->getPackageParserClass())) {
-            throw new \Exception("rpc packageParserClass  error @" . $conf->getPort());
+            throw new Exception("rpc packageParserClass  error @" . $conf->getPort());
         }
         $serverHash = spl_object_hash($conf);
         if (isset($this->serverList[$serverHash])) {
@@ -92,7 +88,7 @@ class Client
             }
         }
         $start = microtime(1);
-        while (!empty($clients)) {
+        while (! empty($clients)) {
             $write = $error = [];
             $read  = array_values($clients);
             $n     = swoole_client_select($read, $write, $error, 0.1);

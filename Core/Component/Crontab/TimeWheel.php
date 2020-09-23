@@ -18,7 +18,7 @@ use Core\Utility\SnowFlake;
 class TimeWheel
 {
     const SWOOLE_TABLE_NAME = 'CRON_TIME_WHEEL';
-    const TASKS_SIZE = 1024;
+    const TASKS_SIZE        = 1024;
 
     private $_tableColumns = [
         'id' => ['type' => \swoole_table::TYPE_STRING, 'size' => 11]
@@ -28,7 +28,7 @@ class TimeWheel
 
     static function getInstance()
     {
-        if (!isset(self::$instance)) {
+        if (! isset(self::$instance)) {
             self::$instance = new static();
         }
         return self::$instance;
@@ -44,6 +44,7 @@ class TimeWheel
 
     /**
      * @param $data
+     *
      * @return bool
      */
     public function push($data)
@@ -96,6 +97,7 @@ class TimeWheel
 
     /**
      * @param $key
+     *
      * @return bool
      */
     public function del($key)
@@ -107,6 +109,7 @@ class TimeWheel
 
     /**
      * @param $minute
+     *
      * @return null|\swoole_table
      */
     private function _getTable($minute)

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/1/23
- * Time: 上午12:30
- */
 
 namespace Core\Swoole\Task;
 
@@ -19,7 +13,7 @@ class TaskManager
 
     static function getInstance()
     {
-        if (!isset(self::$instance)) {
+        if (! isset(self::$instance)) {
             self::$instance = new static();
         }
         return self::$instance;

@@ -72,7 +72,7 @@ class TestProcess extends Controller
 
     function kill()
     {
-        if (!$pid = $this->_getPid()) {
+        if (! $pid = $this->_getPid()) {
             $this->response()->write("{$pid} :process dont find");
             return;
         }
@@ -98,7 +98,7 @@ class TestProcess extends Controller
 
     private function _getPid()
     {
-        if (!$process = ProcessManager::getInstance()->getProcessByName(self::$processName)) {
+        if (! $process = ProcessManager::getInstance()->getProcessByName(self::$processName)) {
             return null;
         }
         $pid = $process->getPid();

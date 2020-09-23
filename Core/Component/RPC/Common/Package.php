@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/10/19
- * Time: 下午2:34
- */
 
 namespace Core\Component\RPC\Common;
 
@@ -13,10 +7,10 @@ use Core\Component\Spl\SplBean;
 
 class Package extends SplBean
 {
-    const ERROR_SERVER_NOT_FOUND = -1;
-    const ERROR_ACTION_NOT_FOUND = -2;
-    const ERROR_SERVER_ERROR = -3;
-    const ERROR_SERVER_CONNECT_FAIL = -4;
+    const ERROR_SERVER_NOT_FOUND         = -1;
+    const ERROR_ACTION_NOT_FOUND         = -2;
+    const ERROR_SERVER_ERROR             = -3;
+    const ERROR_SERVER_CONNECT_FAIL      = -4;
     const ERROR_SERVER_RESPONSE_TIME_OUT = -5;
     protected $serverName;
     protected $action;

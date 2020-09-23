@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2018/5/3
- * Time: 下午1:37
- */
 
 namespace Core\Component\Pool\AbstractInterface;
 
@@ -43,6 +37,7 @@ abstract class Pool
 
     /**
      * @param float $timeOut
+     *
      * @return mixed|null
      */
     public function getObj($timeOut = 0.1)

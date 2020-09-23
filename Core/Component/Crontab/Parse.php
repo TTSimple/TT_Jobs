@@ -18,6 +18,7 @@ class Parse
 
     /**
      *  解析crontab的定时格式
+     *
      * @param string $crontabString
      *
      *      0     1    2    3    4    5
@@ -31,6 +32,7 @@ class Parse
      *      |     +----------- min (0 - 59)
      *      +------------- sec (0-59)
      * @param int    $startTime timestamp [default=current timestamp]
+     *
      * @return int|array unix timestamp  下一分钟内是否需要执行任务，如果需要，则把需要在那几秒执行返回
      * @throws \InvalidArgumentException 错误信息
      */
@@ -39,13 +41,13 @@ class Parse
         if (is_array($crontabString)) {
             return self::_parseArray($crontabString, $startTime);
         }
-        if (!preg_match('/^((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)$/i', trim($crontabString))) {
-            if (!preg_match('/^((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)$/i', trim($crontabString))) {
+        if (! preg_match('/^((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)$/i', trim($crontabString))) {
+            if (! preg_match('/^((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)\s+((\*(\/[0-9]+)?)|[0-9\-\,\/]+)$/i', trim($crontabString))) {
                 self::$error = "Invalid cron string: " . $crontabString;
                 return false;
             }
         }
-        if ($startTime && !is_numeric($startTime)) {
+        if ($startTime && ! is_numeric($startTime)) {
             self::$error = "{$startTime} must be a valid unix timestamp ({$startTime} given)";
             return false;
         }
@@ -85,9 +87,11 @@ class Parse
 
     /**
      * 解析单个配置的含义
+     *
      * @param $s
      * @param $min
      * @param $max
+     *
      * @return array
      */
     static protected function _parseCronNumber($s, $min, $max)
@@ -111,6 +115,7 @@ class Parse
     /**
      * @param $data
      * @param $startTime
+     *
      * @return array
      */
     static protected function _parseArray($data, $startTime)

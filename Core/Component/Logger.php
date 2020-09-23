@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/2/1
- * Time: 上午1:32
- */
 
 namespace Core\Component;
 
@@ -13,12 +7,12 @@ use Core\AbstractInterface\ILoggerWriter;
 
 class Logger
 {
-    private static $instance = [];
-    private $logCategory = 'default';
+    private static $instance    = [];
+    private        $logCategory = 'default';
 
     static function getInstance($logCategory = 'default')
     {
-        if (!isset(self::$instance[$logCategory])) {
+        if (! isset(self::$instance[$logCategory])) {
             //这样做纯属为了IDE提示
             $instance                     = new static($logCategory);
             self::$instance[$logCategory] = $instance;

@@ -34,7 +34,9 @@ class HttpResponseJsonSchema
 
     /**
      * 设置唯一ID 字段名
+     *
      * @param $id
+     *
      * @return $this
      */
     public function setUniqueId($id)
@@ -45,7 +47,9 @@ class HttpResponseJsonSchema
 
     /**
      * 设置info数据
+     *
      * @param $row
+     *
      * @return $this
      */
     public function setRowData($row)
@@ -56,7 +60,9 @@ class HttpResponseJsonSchema
 
     /**
      * 设置数据列表
+     *
      * @param $list
+     *
      * @return $this
      */
     public function setListData($list)
@@ -67,7 +73,9 @@ class HttpResponseJsonSchema
 
     /**
      * 设置分页
+     *
      * @param $page
+     *
      * @return $this
      */
     public function setPage($page)
@@ -78,7 +86,9 @@ class HttpResponseJsonSchema
 
     /**
      * 设置字段映射
+     *
      * @param $fields
+     *
      * @return $this
      */
     public function setFieldsMap($fields)
@@ -89,14 +99,15 @@ class HttpResponseJsonSchema
 
     /**
      * 回复数据
+     *
      * @param string $message
      */
     public function response($message = '操作成功')
     {
-        $response = [
-            'info' => $this->rowData,
-            'list' => $this->listData,
-            'page' => $this->page,
+        $response            = [
+            'info'    => $this->rowData,
+            'list'    => $this->listData,
+            'page'    => $this->page,
             'options' => [
                 'uniqueId' => $this->uniqueId,
                 'fields'   => $this->fieldsMap,
@@ -108,6 +119,7 @@ class HttpResponseJsonSchema
 
     /**
      * 操作成功，返回json数据
+     *
      * @param string|array $data 需要返回的数据，可以覆盖任意默认参数字符串则认为是提示信息
      */
     public function success($data = '操作成功')
@@ -121,15 +133,16 @@ class HttpResponseJsonSchema
 
     /**
      * 操作失败，返回json数据
-     * @param  string  $errorMsg 如果是数组，当任务参数处理，字符串则认为是错误信息
-     * @param  integer $errorCode
+     *
+     * @param string  $errorMsg 如果是数组，当任务参数处理，字符串则认为是错误信息
+     * @param integer $errorCode
      */
     public function error($errorMsg = '', $errorCode = 400)
     {
         $defaultMsg = '非法操作';
         $errorMsg   = $errorMsg ?: $defaultMsg;
         if (is_array($errorMsg)) {
-            if (!isset($errorMsg['message'])) {
+            if (! isset($errorMsg['message'])) {
                 $errorMsg['message'] = $defaultMsg;
             }
             $this->send(array_merge($errorMsg, ['status' => 0]));
@@ -158,15 +171,15 @@ class HttpResponseJsonSchema
             }
         }
         $response = [
-            'info' => [],  //单条数据信息
-            'list' => [],  //列表信息
-            'page' => [],  //分页信息
-            'options' => [    //相关配置
-                'uniqueId' => null  //数据默认唯一索引 前端已自动默认为 id
+            'info'      => [],  //单条数据信息
+            'list'      => [],  //列表信息
+            'page'      => [],  //分页信息
+            'options'   => [          //相关配置
+                'uniqueId' => null    //数据默认唯一索引 前端已自动默认为 id
             ],
-            'errorCode' => 0, //错误代码
+            'errorCode' => 0,  //错误代码
             'message'   => '', //信息
-            'status'    => 1  //操作状态
+            'status'    => 1   //操作状态
         ];
         $response = array_merge($response, $data);
         Response::getInstance()->writeJson(Status::CODE_OK, $response);

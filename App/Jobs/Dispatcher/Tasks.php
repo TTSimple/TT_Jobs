@@ -40,7 +40,7 @@ class Tasks
 
     static function getInstance()
     {
-        if (!isset(self::$instance)) {
+        if (! isset(self::$instance)) {
             self::$instance = new static();
         }
         return self::$instance;
@@ -72,12 +72,12 @@ class Tasks
                     "run_status"      => TasksLoad::RUN_STATUS_START,
                     "run_time_update" => $nowTime,
                 ];
-                if (!isset($task['run_time_start'])) {
+                if (! isset($task['run_time_start'])) {
                     $data['run_time_start'] = $nowTime;
                 }
             }
         }
-        if (!empty($data)) {
+        if (! empty($data)) {
             foreach ($data as $k => $v) {
                 $this->_table->set($k, $v);
                 TasksLoad::getInstance()->getTasks()->set($v['id'], $v);
@@ -171,7 +171,7 @@ class Tasks
                     continue;
                 }
                 $info = $loadTasks->get($task["id"]);
-                if (!is_array($info) || !array_key_exists("timeout", $info)) {
+                if (! is_array($info) || ! array_key_exists("timeout", $info)) {
                     continue;
                 }
                 // 如果运行中的任务超过了阈值,则把超过1个小时没有响应的任务清除

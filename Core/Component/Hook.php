@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/9/23
- * Time: 上午12:05
- */
 
 namespace Core\Component;
 
@@ -15,11 +9,11 @@ use Core\Swoole\Server;
 class Hook
 {
     protected static $instance;
-    private $eventList = [];
+    private          $eventList = [];
 
     static function getInstance()
     {
-        if (!isset(self::$instance)) {
+        if (! isset(self::$instance)) {
             self::$instance = new static();
         }
         return self::$instance;

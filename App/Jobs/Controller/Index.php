@@ -52,13 +52,13 @@ class Index extends Controller
         $model = $model->where('username', '=', $username);
         $model = $model->where('password', '=', md5($password));
         try {
-            if (!$ret = $model->find()) {
+            if (! $ret = $model->find()) {
                 return $this->response()->writeJson(HttpStatus::CODE_OK, $responseError);
             }
             Session::set('auth', $ret->toArray());
             $header   = $this->request()->getSwooleRequest()->header;
             $clientIp = isset($header['x-real-ip']) ? $header['x-real-ip'] : null; // nginx
-            if (!$clientIp) {
+            if (! $clientIp) {
                 $clientIp = $this->request()->getSwooleRequest()->server['remote_addr'];  // swoole_http_server
             }
             $ret->save([

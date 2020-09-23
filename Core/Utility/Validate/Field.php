@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/9/3
- * Time: 下午9:37
- */
 
 namespace Core\Utility\Validate;
 
@@ -12,8 +6,8 @@ namespace Core\Utility\Validate;
 class Field
 {
     protected $currentRule = null;
-    protected $rule = [];
-    protected $msg = [
+    protected $rule        = [];
+    protected $msg         = [
         '__default__' => null
     ];
 
@@ -21,7 +15,7 @@ class Field
     {
         if (isset($this->currentRule)) {
             $this->msg[$this->currentRule] = $msg;
-            $this->currentRule = null;
+            $this->currentRule             = null;
         } else {
             $this->msg['__default__'] = $msg;
         }

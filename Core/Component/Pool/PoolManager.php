@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2018/5/3
- * Time: 下午1:21
- */
 
 namespace Core\Component\Pool;
 
@@ -21,19 +15,19 @@ use Swoole\Table;
  */
 class PoolManager
 {
-    private $poolTable = null;
-    private $poolClassList = [];
+    private $poolTable      = null;
+    private $poolClassList  = [];
     private $poolObjectList = [];
 
-    const TYPE_ONLY_WORKER = 1;
+    const TYPE_ONLY_WORKER      = 1;
     const TYPE_ONLY_TASK_WORKER = 2;
-    const TYPE_ALL_WORKER = 3;
+    const TYPE_ALL_WORKER       = 3;
 
     protected static $instance;
 
     static function getInstance()
     {
-        if (!isset(self::$instance)) {
+        if (! isset(self::$instance)) {
             self::$instance = new static();
         }
         return self::$instance;
@@ -56,9 +50,10 @@ class PoolManager
 
     /**
      * @param string $class
-     * @param $minNum
-     * @param $maxNum
-     * @param int $type
+     * @param        $minNum
+     * @param        $maxNum
+     * @param int    $type
+     *
      * @return bool
      */
     function registerPool($class, $minNum, $maxNum, $type = self::TYPE_ONLY_WORKER)
@@ -83,6 +78,7 @@ class PoolManager
 
     /**
      * @param string $class
+     *
      * @return Pool|null
      */
     function getPool($class)
@@ -96,6 +92,7 @@ class PoolManager
 
     /**
      * 为自定义进程预留
+     *
      * @param $workerId
      */
     function __workerStartHook($workerId)
@@ -127,7 +124,8 @@ class PoolManager
 
     /**
      * @param string $class
-     * @param int $workerId
+     * @param int    $workerId
+     *
      * @return string
      */
     public static function generateTableKey($class, $workerId)

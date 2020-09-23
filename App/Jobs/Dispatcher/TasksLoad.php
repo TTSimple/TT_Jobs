@@ -12,6 +12,7 @@ use Core\Component\Error\Trigger;
 use Core\Swoole\Memory\TableManager;
 use Core\Swoole\Server;
 use App\Jobs\Model\Task as TaskModel;
+use Exception;
 use swoole_table;
 
 /**
@@ -36,6 +37,9 @@ class TasksLoad
     const RUN_STATUS_SUCCESS         = 4;   // 运行成功
     const RUN_STATUS_FAILED          = 5;   // 运行失败
 
+    /**
+     * @var swoole_table|null
+     */
     private $_table;
 
     private $_tableColumns = [
@@ -57,7 +61,7 @@ class TasksLoad
 
     static function getInstance()
     {
-        if (!isset(self::$instance)) {
+        if (! isset(self::$instance)) {
             self::$instance = new static();
         }
         return self::$instance;
@@ -92,8 +96,7 @@ class TasksLoad
             "command"   => $data["command"],
         ];
 
-        $ret = $this->_table->set($data["id"], $tableData);
-        return $ret;
+        return $this->_table->set($data["id"], $tableData);
     }
 
     /**
@@ -137,7 +140,7 @@ class TasksLoad
             foreach ($tasks as $task) {
                 $this->addTask($task);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Trigger::exception($e);
         }
         return true;

@@ -12,6 +12,7 @@ use Core\AbstractInterface\ALogic;
 use App\Jobs\Model\Task as Model;
 use App\Jobs\Dispatcher\Tasks as JobsTasks;
 use Cron\CronExpression;
+use Exception;
 
 /**
  * Class Task
@@ -48,7 +49,7 @@ class Task extends ALogic
         }
         try {
             $ret = $model->select();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->response()
                 ->setMsg($e->getMessage())
                 ->error();
@@ -62,10 +63,10 @@ class Task extends ALogic
 
     function getInfo()
     {
-        if (!$id = $this->request()->getId()) {
+        if (! $id = $this->request()->getId()) {
             return $this->response()->error();
         }
-        if (!$model = (new Model)->get($id)) {
+        if (! $model = (new Model)->get($id)) {
             return $this->response()->error();
         }
         $responseData = $model->toArray();
@@ -76,16 +77,16 @@ class Task extends ALogic
 
     function create()
     {
-        if (!$requestData = $this->request()->getData()) {
+        if (! $requestData = $this->request()->getData()) {
             return $this->response()->error();
         }
         try {
             CronExpression::factory($requestData["cron_spec"]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->response()->error('时间表达式格式错误！<br>' . " ( {$e->getMessage()} )");
         }
         $model = new Model;
-        if (!$ret = $model->save($requestData)) {
+        if (! $ret = $model->save($requestData)) {
             return $this->response()->error();
         }
         $responseData = $model->toArray();
@@ -96,26 +97,26 @@ class Task extends ALogic
 
     function update()
     {
-        if (!$id = $this->request()->getId()) {
+        if (! $id = $this->request()->getId()) {
             return $this->response()->error();
         }
-        if (!$requestData = $this->request()->getData()) {
+        if (! $requestData = $this->request()->getData()) {
             return $this->response()->error();
         }
         if (isset($requestData['cron_spec'])) {
             try {
                 CronExpression::factory($requestData["cron_spec"]);
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 return $this->response()->error('时间表达式格式错误！<br>' . " ( {$e->getMessage()} )");
             }
         }
-        if (!$model = (new Model)->get($id)) {
+        if (! $model = (new Model)->get($id)) {
             return $this->response()->error();
         }
         if ($model->getAttr('user_id')) {
             unset($requestData['user_id']);
         }
-        if (!$ret = $model->save($requestData)) {
+        if (! $ret = $model->save($requestData)) {
             return $this->response()->error();
         }
         return $this->response()
@@ -129,7 +130,7 @@ class Task extends ALogic
     function _EVENT_beforeUpdate()
     {
         if (0 == $status = $this->request()->getData('status')) {
-            if (!$id = $this->request()->getId()) {
+            if (! $id = $this->request()->getId()) {
                 return $this->response()->error();
             }
             JobsTasks::getInstance()->deleteTask($id);
@@ -144,10 +145,10 @@ class Task extends ALogic
 //        if (0 == $status = $this->request()->getData('status')) {
 //            return;
 //        }
-        if (!$id = $this->request()->getId()) {
+        if (! $id = $this->request()->getId()) {
             return;
         }
-        if (!$model = (new Model)->get($id)) {
+        if (! $model = (new Model)->get($id)) {
             return;
         }
         $data = $model->toArray();

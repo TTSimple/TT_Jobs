@@ -26,7 +26,7 @@ class AuthGroupAccess extends ALogic
 
     function getInfo()
     {
-        if (!$id = $this->request()->getId()) {
+        if (! $id = $this->request()->getId()) {
             return $this->response()->error();
         }
         try {
@@ -42,10 +42,10 @@ class AuthGroupAccess extends ALogic
 
     function create()
     {
-        if (!$requestData = $this->request()->getData()) {
+        if (! $requestData = $this->request()->getData()) {
             return $this->response()->error();
         }
-        if (!$uid = $this->request()->getExtend('uid')) {
+        if (! $uid = $this->request()->getExtend('uid')) {
             return $this->response()->error();
         }
         if (is_string($requestData['group_id'])) {
@@ -58,7 +58,7 @@ class AuthGroupAccess extends ALogic
             }
         }
         $model = new Model;
-        if (!$ret = $model->save($requestData)) {
+        if (! $ret = $model->save($requestData)) {
             return $this->response()->error();
         }
         $responseData = $model->toArray();
@@ -69,10 +69,10 @@ class AuthGroupAccess extends ALogic
 
     function update()
     {
-        if (!$uid = $this->request()->getExtend('uid')) {
+        if (! $uid = $this->request()->getExtend('uid')) {
             return $this->response()->error();
         }
-        if (!$requestData = $this->request()->getData()) {
+        if (! $requestData = $this->request()->getData()) {
             return $this->response()->error();
         }
         if (is_string($requestData['group_id'])) {
@@ -89,7 +89,7 @@ class AuthGroupAccess extends ALogic
         } catch (Exception $e) {
             return $this->response()->error($e->getMessage());
         }
-        if (!$ret = (new Model)->insertAll($requestData)) {
+        if (! $ret = (new Model)->insertAll($requestData)) {
             return $this->response()->error();
         }
         return $this->response()

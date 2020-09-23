@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/9/10
- * Time: 下午3:50
- */
 
 namespace Core\Component\IO;
 
@@ -15,7 +9,7 @@ class Stream
     private $seekable;
     private $readable;
     private $writable;
-    private $readList = [
+    private $readList  = [
         'r'   => true, 'w+' => true, 'r+' => true, 'x+' => true, 'c+' => true,
         'rb'  => true, 'w+b' => true, 'r+b' => true, 'x+b' => true,
         'c+b' => true, 'rt' => true, 'w+t' => true, 'r+t' => true,
@@ -32,35 +26,35 @@ class Stream
     {
         switch (gettype($resource)) {
             case 'resource':
-                {
-                    $this->stream = $resource;
-                    break;
-                }
+            {
+                $this->stream = $resource;
+                break;
+            }
             case 'object':
-                {
-                    if (method_exists($resource, '__toString')) {
-                        $resource     = $resource->__toString();
-                        $this->stream = fopen('php://memory', $mode);
-                        if ($resource !== '') {
-                            fwrite($this->stream, $resource);
-                        }
-                        break;
-                    } else {
-                        throw new \InvalidArgumentException('Invalid resource type: ' . gettype($resource));
-                    }
-                }
-            default:
-                {
+            {
+                if (method_exists($resource, '__toString')) {
+                    $resource     = $resource->__toString();
                     $this->stream = fopen('php://memory', $mode);
-                    try {
-                        $resource = (string)$resource;
-                        if ($resource !== '') {
-                            fwrite($this->stream, $resource);
-                        }
-                    } catch (\Exception $exception) {
-                        throw new \InvalidArgumentException('Invalid resource type: ' . gettype($resource));
+                    if ($resource !== '') {
+                        fwrite($this->stream, $resource);
                     }
+                    break;
+                } else {
+                    throw new \InvalidArgumentException('Invalid resource type: ' . gettype($resource));
                 }
+            }
+            default:
+            {
+                $this->stream = fopen('php://memory', $mode);
+                try {
+                    $resource = (string)$resource;
+                    if ($resource !== '') {
+                        fwrite($this->stream, $resource);
+                    }
+                } catch (\Exception $exception) {
+                    throw new \InvalidArgumentException('Invalid resource type: ' . gettype($resource));
+                }
+            }
         }
         $info           = stream_get_meta_data($this->stream);
         $this->seekable = $info['seekable'];
@@ -88,7 +82,7 @@ class Stream
 
     public function detach()
     {
-        if (!isset($this->stream)) {
+        if (! isset($this->stream)) {
             return null;
         }
         $this->readable = $this->writable = $this->seekable = false;
@@ -118,7 +112,7 @@ class Stream
 
     public function eof()
     {
-        return !$this->stream || feof($this->stream);
+        return ! $this->stream || feof($this->stream);
     }
 
     public function isSeekable()
@@ -128,7 +122,7 @@ class Stream
 
     public function seek($offset, $whence = SEEK_SET)
     {
-        if (!$this->seekable) {
+        if (! $this->seekable) {
             throw new \RuntimeException('Stream is not seekable');
         } elseif (fseek($this->stream, $offset, $whence) === -1) {
             throw new \RuntimeException('Unable to seek to stream position '
@@ -148,7 +142,7 @@ class Stream
 
     public function write($string)
     {
-        if (!$this->writable) {
+        if (! $this->writable) {
             throw new \RuntimeException('Cannot write to a non-writable stream');
         }
         $result = fwrite($this->stream, $string);
@@ -165,7 +159,7 @@ class Stream
 
     public function read($length)
     {
-        if (!$this->readable) {
+        if (! $this->readable) {
             throw new \RuntimeException('Cannot read from non-readable stream');
         }
         if ($length < 0) {
@@ -193,9 +187,9 @@ class Stream
 
     public function getMetadata($key = null)
     {
-        if (!isset($this->stream)) {
+        if (! isset($this->stream)) {
             return $key ? null : [];
-        } elseif (!$key) {
+        } elseif (! $key) {
             return stream_get_meta_data($this->stream);
         } else {
             $meta = stream_get_meta_data($this->stream);

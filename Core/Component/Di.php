@@ -1,13 +1,9 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/2/1
- * Time: 上午12:23
- */
 
 namespace Core\Component;
 
+
+use ReflectionException;
 
 class Di
 {
@@ -15,11 +11,11 @@ class Di
      * 借以实现IOC注入
      */
     protected static $instance;
-    protected $container = [];
+    protected        $container = [];
 
     static function getInstance()
     {
-        if (!isset(self::$instance)) {
+        if (! isset(self::$instance)) {
             self::$instance = new static();
         }
         return self::$instance;
@@ -53,7 +49,9 @@ class Di
 
     /**
      * @param $key
+     *
      * @return null|string
+     * @throws ReflectionException
      */
     function get($key)
     {

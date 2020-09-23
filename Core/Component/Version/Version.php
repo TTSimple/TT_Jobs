@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/11/22
- * Time: 下午9:57
- */
 
 namespace Core\Component\Version;
 
@@ -19,7 +13,7 @@ class Version
     private $versionName;
     private $judge;
     private $routeCollector;
-    private $dispatcher = null;
+    private $dispatcher     = null;
     private $defaultHandler = null;
 
     function __construct($versionName, callable $judge)
@@ -39,7 +33,7 @@ class Version
         if ($this->dispatcher == null) {
             $this->dispatcher = new Dispatcher($this->routeCollector->getData());
         }
-        return $this->dispatcher->dispatch($urlPath,$requestMethod);
+        return $this->dispatcher->dispatch($urlPath, $requestMethod);
     }
 
     /**

@@ -56,10 +56,10 @@ class AuthAccessLog extends ALogic
 
     function getInfo()
     {
-        if (!$id = $this->request()->getId()) {
+        if (! $id = $this->request()->getId()) {
             return $this->response()->error();
         }
-        if (!$model = (new Model)->get($id)) {
+        if (! $model = (new Model)->get($id)) {
             return $this->response()->error();
         }
         $responseData = $model->toArray();
@@ -70,11 +70,11 @@ class AuthAccessLog extends ALogic
 
     function create()
     {
-        if (!$responseData = $this->request()->getData()) {
+        if (! $responseData = $this->request()->getData()) {
             return $this->response()->error();
         }
         $model = new Model;
-        if (!$ret = $model->save($responseData)) {
+        if (! $ret = $model->save($responseData)) {
             return $this->response()->error();
         }
         $responseData = $model->toArray();

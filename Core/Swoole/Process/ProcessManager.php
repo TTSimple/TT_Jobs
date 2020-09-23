@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2018/1/11
- * Time: 下午9:00
- */
 
 namespace Core\Swoole\Process;
 
@@ -27,7 +21,7 @@ class ProcessManager
 
     static function getInstance()
     {
-        if (!isset(self::$instance)) {
+        if (! isset(self::$instance)) {
             self::$instance = new static();
         }
         return self::$instance;
@@ -61,7 +55,7 @@ class ProcessManager
             return false;
         }
         $key = md5($processName);
-        if (!isset($this->_processList[$key])) {
+        if (! isset($this->_processList[$key])) {
             try {
                 $process                  = new $processClass($processName, $redirectStdinStdout, $args, $async);
                 $this->_processList[$key] = $process;

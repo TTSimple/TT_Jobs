@@ -12,16 +12,16 @@ namespace Core\Utility\Curl;
 /**
  * 爬虫UA随机生成器
  * Class UAGenerate
- * @author : evalor <master@evalor.cn>
+ * @author  : evalor <master@evalor.cn>
  * @package Core\Utility\Curl
  */
 class UAGenerate
 {
     // 操作系统类型
-    const SYS_WIN = 'WIN';
-    const SYS_OSX = 'OSX';
-    const SYS_IOS = 'IOS';
-    const SYS_LINUX = 'LINUX';
+    const SYS_WIN     = 'WIN';
+    const SYS_OSX     = 'OSX';
+    const SYS_IOS     = 'IOS';
+    const SYS_LINUX   = 'LINUX';
     const SYS_ANDROID = 'ANDROID';
 
     // 操作系统版本
@@ -32,11 +32,13 @@ class UAGenerate
 
     /**
      * 生成随机UA
-     * @author : evalor <master@evalor.cn>
-     * @param bool $isWechat 是否微信UA
-     * @param string $system 操作系统
-     * @param string $bits 操作系统位数
+     *
+     * @param bool   $isWechat 是否微信UA
+     * @param string $system   操作系统
+     * @param string $bits     操作系统位数
+     *
      * @return string 随机UA字符串
+     * @author : evalor <master@evalor.cn>
      */
     public static function mock($system = 'UNKNOW', $isWechat = false, $bits = 'UNKNOW')
     {
@@ -45,14 +47,15 @@ class UAGenerate
 
     /**
      * 生成操作系统以及版本号
-     * @author : evalor <master@evalor.cn>
+     *
      * @param string $system 平台类型
-     * @param string $bits 系统版本(手机不分版本)
+     * @param string $bits   系统版本(手机不分版本)
+     *
      * @return string UA平台子串
+     * @author : evalor <master@evalor.cn>
      */
     private static function mockPlatform($system, $bits)
     {
-
         $Platform = [
             UAGenerate::SYS_WIN,
             UAGenerate::SYS_OSX,
@@ -63,8 +66,8 @@ class UAGenerate
 
         $Bit = [UAGenerate::SYS_BIT_X64, UAGenerate::SYS_BIT_X86,];
 
-        if (!in_array($system, $Platform)) $system = $Platform[array_rand($Platform, 1)];
-        if (!in_array($bits, $Bit)) $bits = $Bit[array_rand($Bit, 1)];
+        if (! in_array($system, $Platform)) $system = $Platform[array_rand($Platform, 1)];
+        if (! in_array($bits, $Bit)) $bits = $Bit[array_rand($Bit, 1)];
 
 
         $Platform = [
@@ -79,7 +82,7 @@ class UAGenerate
                     ' (Windows NT 10.0',   // Windows 10
                 ],
                 'bits'    => [
-                    'X86' => 'WOW64 )',  // 32Bits
+                    'X86' => 'WOW64 )',      // 32Bits
                     'X64' => 'Win64; x64)'   // 64Bits
                 ]
             ],
@@ -126,7 +129,7 @@ class UAGenerate
                     ' 10_12_4)',  // Sierra 10.12.4
                 ],
                 'bits'    => [
-                    'X86' => ' (Macintosh; Intel Mac OS X',    // 32Bits
+                    'X86' => ' (Macintosh; Intel Mac OS X',         // 32Bits
                     'X64' => ' (Macintosh; Intel x86_64 Mac OS X'   // 64Bits
                 ],
             ],
@@ -193,9 +196,11 @@ class UAGenerate
 
     /**
      * 生成浏览器以及引擎版本号
-     * @author : evalor <master@evalor.cn>
+     *
      * @param bool $isWechat 是否模拟微信浏览器
+     *
      * @return string 浏览器引擎以及版本号
+     * @author : evalor <master@evalor.cn>
      */
     private static function mockBrowser($isWechat = false)
     {

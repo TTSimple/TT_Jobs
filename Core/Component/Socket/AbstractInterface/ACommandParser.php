@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/10/21
- * Time: 下午5:49
- */
 
 namespace Core\Component\Socket\AbstractInterface;
 

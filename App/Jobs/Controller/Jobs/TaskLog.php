@@ -22,7 +22,7 @@ class TaskLog extends Controller
             $logic->request()->setWhere(['task_id' => $search]);
         }
         $ret = $logic->call('getList');
-        if (!$ret->getStatus()) {
+        if (! $ret->getStatus()) {
             $this->json()->error($ret->getMsg());
             return;
         }

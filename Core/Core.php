@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/1/22
- * Time: 下午9:54
- */
 
 namespace Core;
 
@@ -36,7 +30,7 @@ class Core
 
     static function getInstance(callable $preCall = null)
     {
-        if (!isset(self::$instance)) {
+        if (! isset(self::$instance)) {
             self::$instance = new static($preCall);
         }
         return self::$instance;
@@ -75,7 +69,7 @@ class Core
             $tempDir = Config::getInstance()->getConf('APP_TEMP_DIR');
             Di::getInstance()->set(SysConst::TEMP_DIRECTORY, $tempDir);
         }
-        if (!File::createDir($tempDir)) {
+        if (! File::createDir($tempDir)) {
             die("create Temp Directory:{$tempDir} fail");
         } else {
             $path = $tempDir . "/Session"; // 创建默认Session存储目录
@@ -86,7 +80,7 @@ class Core
             $logDir = Config::getInstance()->getConf('APP_LOG_DIR');
             Di::getInstance()->set(SysConst::LOG_DIRECTORY, $logDir);
         }
-        if (!File::createDir($logDir)) {
+        if (! File::createDir($logDir)) {
             die("create log Directory:{$logDir} fail");
         }
         Config::getInstance()->setConf("SERVER.CONFIG.log_file", $logDir . "/swoole.log");
@@ -117,7 +111,7 @@ class Core
             });
             register_shutdown_function(function () {
                 $error = error_get_last();
-                if (!empty($error)) {
+                if (! empty($error)) {
                     Trigger::error($error['message'], $error['file'], $error['line'], E_ERROR, debug_backtrace());
                     //HTTP下，发送致命错误时，原有进程无法按照预期结束链接,强制执行end
                     if (Request::getInstance()) {

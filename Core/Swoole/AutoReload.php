@@ -39,7 +39,7 @@ class AutoReload
      */
     function __construct($serverPid = null)
     {
-        if (!extension_loaded('inotify')) {
+        if (! extension_loaded('inotify')) {
             return false;
 //            exit("Please install inotify extension.\n");
         }
@@ -52,7 +52,7 @@ class AutoReload
         \swoole_event_add($this->_inotify, function ($ifd) {
             $events = \inotify_read($this->_inotify);
 //            var_dump($events);
-            if (!$events) {
+            if (! $events) {
                 return;
             }
             foreach ($events as $event) {
@@ -65,11 +65,11 @@ class AutoReload
                     IN_MOVED_TO == $event['mask'] or
                     IN_MOVED_FROM == $event['mask']) {
                     $fileType = strrchr($event['name'], '.');
-                    if (!isset($this->_reloadFileTypes[$fileType])) { //非重启类型
+                    if (! isset($this->_reloadFileTypes[$fileType])) { //非重启类型
                         continue;
                     }
                 }
-                if (!$this->_reloading) { // 正在reload，不再接受任何事件，冻结10秒
+                if (! $this->_reloading) { // 正在reload，不再接受任何事件，冻结10秒
                     Logger::getInstance()->log("after 10 seconds reload the server");
                     \swoole_timer_after($this->_afterSomeSeconds * 1000, [$this, 'reload']); //有事件发生了，进行重启
                     $this->_reloading = true;
@@ -132,7 +132,7 @@ class AutoReload
      */
     function watch($dir, $root = true)
     {
-        if (!\is_dir($dir)) { //目录不存在
+        if (! \is_dir($dir)) { //目录不存在
             Trigger::error("[{$dir}] is not a directory.");
         }
         if (isset($this->_watchingFiles[$dir])) { //避免重复监听

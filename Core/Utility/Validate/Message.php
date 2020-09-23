@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/9/5
- * Time: 上午11:39
- */
 
 namespace Core\Utility\Validate;
 
@@ -20,7 +14,7 @@ class Message
 
     function hasError()
     {
-        return !empty($this->error);
+        return ! empty($this->error);
     }
 
     function getError($filed)

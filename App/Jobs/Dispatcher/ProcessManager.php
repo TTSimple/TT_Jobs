@@ -30,7 +30,7 @@ class ProcessManager
 
     static function getInstance()
     {
-        if (!isset(self::$instance)) {
+        if (! isset(self::$instance)) {
             self::$instance = new static();
         }
         return self::$instance;
@@ -67,7 +67,7 @@ class ProcessManager
             return false;
         }
         $md5Key = $this->_generateKey($key);
-        if (!isset($this->_processList[$md5Key])) {
+        if (! isset($this->_processList[$md5Key])) {
             try {
                 $this->_processList[$md5Key] = (new $processClass($key, $processName, $onFinish, $args));
                 return true;

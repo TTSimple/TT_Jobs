@@ -94,10 +94,10 @@ CREATE TABLE `tt_auth_group_access` (
  */
 class Web
 {
-    const AUTH_ON = true;
+    const AUTH_ON  = true;
     const AUTH_OFF = false;
 
-    const REAL_TIME_AUTH = 1;
+    const REAL_TIME_AUTH  = 1;
     const LOGIN_TIME_AUTH = 2;
 
     protected $_config = [
@@ -118,11 +118,12 @@ class Web
     }
 
     /**
-     * @param string|array  $name      需要验证的规则列表,支持逗号分隔的权限规则或索引数组
-     * @param int           $uid       认证用户的id
-     * @param int           $type
-     * @param string        $relation  如果为 'or' 表示满足任一条规则即通过验证;如果为 'and'则表示需满足所有规则才能通过验证
-     * @param string        $mode      执行check的模式
+     * @param string|array $name     需要验证的规则列表,支持逗号分隔的权限规则或索引数组
+     * @param int          $uid      认证用户的id
+     * @param int          $type
+     * @param string       $relation 如果为 'or' 表示满足任一条规则即通过验证;如果为 'and'则表示需满足所有规则才能通过验证
+     * @param string       $mode     执行check的模式
+     *
      * @return bool                    通过验证返回true;失败返回false
      * @throws DataNotFoundException
      * @throws DbException
@@ -130,7 +131,7 @@ class Web
      */
     public function check($name, $uid, $type, $relation = 'or', $mode = 'url')
     {
-        if (!$this->_config['auth_on']) {
+        if (! $this->_config['auth_on']) {
             return true;
         }
 
@@ -161,7 +162,7 @@ class Web
             }
         }
 
-        if ($relation === 'or' && !empty($list)) {
+        if ($relation === 'or' && ! empty($list)) {
             return true;
         }
 
@@ -175,6 +176,7 @@ class Web
 
     /**
      * @param int $uid
+     *
      * @return array|bool array(array('uid'=>'用户id','group_id'=>'用户组id','title'=>'用户组名称','rules'=>'用户组拥有的规则id,多个,号隔开'))
      * @throws DataNotFoundException
      * @throws DbException
@@ -188,7 +190,7 @@ class Web
             return $groups[$uid];
         }
 
-        $user_groups  = Db::name($this->_config['auth_group_access'])
+        $user_groups = Db::name($this->_config['auth_group_access'])
             ->alias('a')
             ->where('a.uid', $uid)
             ->where('g.status', 1)
@@ -203,6 +205,7 @@ class Web
     /**
      * @param $uid
      * @param $type
+     *
      * @return array|mixed
      * @throws DataNotFoundException
      * @throws DbException
@@ -253,8 +256,8 @@ class Web
         // 循环规则，判断结果。
         $authList = [];
         foreach ($rules as $rule) {
-            if (!empty($rule['condition'])) { // 根据condition进行验证
-                $user = $this->getUserInfo($uid); // 获取用户信息,一维数组
+            if (! empty($rule['condition'])) {                                                                                                                                                                                                                                                                                  // 根据condition进行验证
+                $user    = $this->getUserInfo($uid);                                                                                                                                                                                                                                                                               // 获取用户信息,一维数组
                 $command = preg_replace('/\{(\w*?)\}/', '$user[\'\\1\']', $rule['condition']);
                 // dump($command); // debug
                 @(eval('$condition=(' . $command . ');'));
@@ -277,6 +280,7 @@ class Web
 
     /**
      * @param $uid
+     *
      * @return mixed
      * @throws DataNotFoundException
      * @throws DbException
@@ -285,7 +289,7 @@ class Web
     protected function getUserInfo($uid)
     {
         static $userInfo = [];
-        if (!isset($userInfo[$uid])) {
+        if (! isset($userInfo[$uid])) {
             $userInfo[$uid] = Db::name($this->_config['auth_user'])
                 ->where((string)$this->_config['auth_user_id_field'], $uid)
                 ->find();

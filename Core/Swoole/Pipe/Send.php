@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/10/23
- * Time: 下午1:46
- */
 
 namespace Core\Swoole\Pipe;
 

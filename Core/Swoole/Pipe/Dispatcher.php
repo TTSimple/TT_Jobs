@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/10/23
- * Time: 上午2:28
- */
 
 namespace Core\Swoole\Pipe;
 
@@ -14,12 +8,12 @@ use Core\Component\SysConst;
 
 class Dispatcher
 {
-    private $commandList;
+    private        $commandList;
     private static $instance;
 
     static function getInstance()
     {
-        if (!isset(self::$instance)) {
+        if (! isset(self::$instance)) {
             self::$instance = new Dispatcher();
         }
         return self::$instance;

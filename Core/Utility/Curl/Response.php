@@ -1,17 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/1/23
- * Time: 上午11:17
- */
 
 namespace Core\Utility\Curl;
 
 
 class Response
 {
-    protected $body = '';
+    protected $body    = '';
     protected $error;
     protected $errorNo;
     protected $curlInfo;
@@ -30,10 +24,10 @@ class Response
         $this->body       = substr($rawResponse, $this->curlInfo['header_size']);
         //处理头部中的cookie
         preg_match_all("/Set-Cookie:(.*)\n/U", $this->headerLine, $ret);
-        if (!empty($ret[0])) {
+        if (! empty($ret[0])) {
             foreach ($ret[0] as $item) {
-                preg_match('/(Cookie: )(.*?)(\r\n)/',$item,$ret);
-                $ret = explode('=',trim($ret[2],';'));
+                preg_match('/(Cookie: )(.*?)(\r\n)/', $item, $ret);
+                $ret    = explode('=', trim($ret[2], ';'));
                 $cookie = new Cookie();
                 $cookie->setValue($ret[1]);
                 $cookie->setName($ret[0]);
@@ -99,7 +93,7 @@ class Response
     function __toString()
     {
         $ret = '';
-        if (!empty($this->headerLine)) {
+        if (! empty($this->headerLine)) {
             $ret = $this->headerLine . "\n\r\n\r";
         }
         return $ret . $this->body;

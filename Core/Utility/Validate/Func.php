@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/6/25
- * Time: 下午2:48
- */
 
 namespace Core\Utility\Validate;
 
@@ -21,7 +15,7 @@ class Func
             if (is_array($data)) {
                 foreach ($data as $item) {
                     if (is_string($item)) {
-                        if (!checkdnsrr(parse_url($item, PHP_URL_HOST))) {
+                        if (! checkdnsrr(parse_url($item, PHP_URL_HOST))) {
                             return false;
                         }
                     } else {
@@ -33,7 +27,7 @@ class Func
                 return false;
             }
         } else {
-            if (!empty($data) && is_string($data)) {
+            if (! empty($data) && is_string($data)) {
                 return checkdnsrr(parse_url($data, PHP_URL_HOST));
             } else {
                 return false;
@@ -48,7 +42,7 @@ class Func
             if (is_array($data)) {
                 foreach ($data as $item) {
                     if (is_string($item)) {
-                        if (!preg_match('/^[a-zA-Z]+$/', $item)) {
+                        if (! preg_match('/^[a-zA-Z]+$/', $item)) {
                             return false;
                         }
                     } else {
@@ -60,7 +54,7 @@ class Func
                 return false;
             }
         } else {
-            if (!empty($data) && is_string($data)) {
+            if (! empty($data) && is_string($data)) {
                 return preg_match('/^[a-zA-Z]+$/', $data);
             } else {
                 return false;
@@ -266,7 +260,7 @@ class Func
         if (self::isMultiSearch($column)) {
             if (is_array($data)) {
                 foreach ($data as $item) {
-                    if (!filter_var($item, FILTER_VALIDATE_FLOAT)) {
+                    if (! filter_var($item, FILTER_VALIDATE_FLOAT)) {
                         return false;
                     }
                 }
@@ -285,7 +279,7 @@ class Func
         if (self::isMultiSearch($column)) {
             if (is_array($data)) {
                 foreach ($data as $item) {
-                    if (!in_array($item, $args)) {
+                    if (! in_array($item, $args)) {
                         return false;
                     }
                 }
@@ -304,7 +298,7 @@ class Func
         if (self::isMultiSearch($column)) {
             if (is_array($data)) {
                 foreach ($data as $item) {
-                    if (!filter_var($item, FILTER_VALIDATE_INT)) {
+                    if (! filter_var($item, FILTER_VALIDATE_INT)) {
                         return false;
                     }
                 }
@@ -323,7 +317,7 @@ class Func
         if (self::isMultiSearch($column)) {
             if (is_array($data)) {
                 foreach ($data as $item) {
-                    if (!filter_var($item, FILTER_VALIDATE_IP)) {
+                    if (! filter_var($item, FILTER_VALIDATE_IP)) {
                         return false;
                     }
                 }
@@ -342,7 +336,7 @@ class Func
         if (self::isMultiSearch($column)) {
             if (is_array($data)) {
                 foreach ($data as $item) {
-                    if (!is_array($item)) {
+                    if (! is_array($item)) {
                         return false;
                     }
                 }
@@ -412,7 +406,7 @@ class Func
                 return false;
             }
         } else {
-            return !Judge::isEmpty($data);
+            return ! Judge::isEmpty($data);
         }
     }
 
@@ -431,7 +425,7 @@ class Func
                 return false;
             }
         } else {
-            return !in_array($data, $args);
+            return ! in_array($data, $args);
         }
     }
 
@@ -441,7 +435,7 @@ class Func
         if (self::isMultiSearch($column)) {
             if (is_array($data)) {
                 foreach ($data as $item) {
-                    if (!is_numeric($item)) {
+                    if (! is_numeric($item)) {
                         return false;
                     }
                 }
@@ -610,7 +604,7 @@ class Func
             if (is_array($data)) {
                 foreach ($data as $item) {
                     if (is_numeric($item) || is_string($item)) {
-                        if (!preg_match($regex, $item)) {
+                        if (! preg_match($regex, $item)) {
                             return false;
                         }
                     } else {
@@ -712,7 +706,7 @@ class Func
         if (self::isMultiSearch($column)) {
             if (is_array($data)) {
                 foreach ($data as $item) {
-                    if (!filter_var($item, FILTER_VALIDATE_URL)) {
+                    if (! filter_var($item, FILTER_VALIDATE_URL)) {
                         return false;
                     }
                 }

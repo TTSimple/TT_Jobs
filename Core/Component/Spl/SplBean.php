@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/4/29
- * Time: 下午1:54
- */
 
 namespace Core\Component\Spl;
 
@@ -14,7 +8,7 @@ use Core\Utility\Judge;
 abstract class SplBean implements \JsonSerializable
 {
     private $__varList = [];
-    const FILTER_TYPE_NOT_NULL = 1;
+    const FILTER_TYPE_NOT_NULL  = 1;
     const FILTER_TYPE_NOT_EMPTY = 2;
 
     final function __construct($beanArray = [])
@@ -63,12 +57,12 @@ abstract class SplBean implements \JsonSerializable
         }
         if ($filterType === self::FILTER_TYPE_NOT_NULL) {
             return array_filter($ret, function ($val) {
-                return !is_null($val);
+                return ! is_null($val);
             });
         } else if ($filterType === self::FILTER_TYPE_NOT_EMPTY) {
             return array_filter($ret, function ($val) {
                 //0不为空
-                return !Judge::isEmpty($val);
+                return ! Judge::isEmpty($val);
             });
         } else {
             return $ret;

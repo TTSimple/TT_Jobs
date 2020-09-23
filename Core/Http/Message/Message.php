@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/6/13
- * Time: 下午7:01
- */
-
 namespace Core\Http\Message;
 
 class Message

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/10/2
- * Time: 下午11:01
- */
 
 namespace Core\Http\Session;
 

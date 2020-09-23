@@ -60,7 +60,7 @@ class Sort
                         $flag        = true;//发生了交换，故将交换标志置为真
                     }
                 }
-                if (!$flag)//本趟排序未发生交换，提前终止算法
+                if (! $flag)//本趟排序未发生交换，提前终止算法
                     return $arr;
             }
         } else {
@@ -76,7 +76,7 @@ class Sort
                         $flag        = true;//发生了交换，故将交换标志置为真
                     }
                 }
-                if (!$flag)//本趟排序未发生交换，提前终止算法
+                if (! $flag)//本趟排序未发生交换，提前终止算法
                     return $arr;
             }
         }
@@ -85,9 +85,10 @@ class Sort
     }
 
     /**
-     * @param $multi_array
-     * @param $sort_key
+     * @param     $multi_array
+     * @param     $sort_key
      * @param int $sort
+     *
      * @return array|bool
      * $arr = array(array("a"=>15,"b"=>"xxxxx1"),array("a"=>115,"b"=>"xxxxx2"),);
      * $data = multi_array_sort($arr,"a");

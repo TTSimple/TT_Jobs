@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2016/12/11
- * Time: 02:44
- */
 
 namespace Core\Swoole;
 
@@ -29,7 +23,7 @@ class Config
 
     static function getInstance()
     {
-        if (!isset(self::$instance)) {
+        if (! isset(self::$instance)) {
             self::$instance = new static();
         }
         return self::$instance;

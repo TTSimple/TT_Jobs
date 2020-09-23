@@ -63,10 +63,10 @@ class Admin extends ALogic
 
     function getInfo()
     {
-        if (!$id = $this->request()->getId()) {
+        if (! $id = $this->request()->getId()) {
             return $this->response()->error();
         }
-        if (!$model = (new Model)->get($id)) {
+        if (! $model = (new Model)->get($id)) {
             return $this->response()->error();
         }
         $responseData = $model->toArray();
@@ -77,11 +77,11 @@ class Admin extends ALogic
 
     function create()
     {
-        if (!$requestData = $this->request()->getData()) {
+        if (! $requestData = $this->request()->getData()) {
             return $this->response()->error();
         }
         $model = new Model;
-        if (!$ret = $model->save($requestData)) {
+        if (! $ret = $model->save($requestData)) {
             return $this->response()->error();
         }
         $requestData = $model->toArray();
@@ -92,17 +92,17 @@ class Admin extends ALogic
 
     function update()
     {
-        if (!$id = $this->request()->getId()) {
+        if (! $id = $this->request()->getId()) {
             return $this->response()->error();
         }
-        if (!$requestData = $this->request()->getData()) {
+        if (! $requestData = $this->request()->getData()) {
             return $this->response()->error();
         }
-        if (!$model = (new Model)->get($id)) {
+        if (! $model = (new Model)->get($id)) {
             return $this->response()->error();
         }
         try {
-            if (!$ret = $model->save($requestData)) {
+            if (! $ret = $model->save($requestData)) {
                 return $this->response()->error();
             }
         } catch (Exception $e) {
@@ -114,14 +114,14 @@ class Admin extends ALogic
 
     function delete()
     {
-        if (!$id = $this->request()->getId()) {
+        if (! $id = $this->request()->getId()) {
             return $this->response()->error();
         }
-        if (!$model = (new Model)->get($id)) {
+        if (! $model = (new Model)->get($id)) {
             return $this->response()->error();
         }
         $model->setAttr('is_del', Model::DELETED);
-        if (!$ret = $model->save()) {
+        if (! $ret = $model->save()) {
             return $this->response()->error();
         }
         return $this->response()

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/1/22
- * Time: 下午9:55
- */
 
 namespace Core\Swoole;
 
@@ -36,7 +30,7 @@ class Server
      */
     static function getInstance()
     {
-        if (!isset(self::$instance)) {
+        if (! isset(self::$instance)) {
             self::$instance = new static();
         }
         return self::$instance;
@@ -156,7 +150,7 @@ class Server
     private function onTaskEvent()
     {
         $num = Config::getInstance()->getTaskWorkerNum();
-        if (!empty($num)) {
+        if (! empty($num)) {
             $this->getServer()->on("task", function (\swoole_http_server $server, $taskId, $workerId, $taskObj) {
                 try {
                     if (is_string($taskObj) && class_exists($taskObj)) {
@@ -179,7 +173,7 @@ class Server
     private function onFinish()
     {
         $num = Config::getInstance()->getTaskWorkerNum();
-        if (!empty($num)) {
+        if (! empty($num)) {
             $this->getServer()->on("finish", function (\swoole_server $server, $taskId, $taskObj) {
                 try {
                     Event::getInstance()->onFinish($server, $taskId, $taskObj);

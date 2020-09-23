@@ -38,7 +38,7 @@ class Dispatcher
 
     static function getInstance()
     {
-        if (!isset(self::$instance)) {
+        if (! isset(self::$instance)) {
             self::$instance = new static();
         }
         return self::$instance;
@@ -64,7 +64,7 @@ class Dispatcher
 
     function dispatch()
     {
-        if (!$this->_server || !$this->_workerId) {
+        if (! $this->_server || ! $this->_workerId) {
             return;
         }
         if ($this->_workerId == 1) {
@@ -93,7 +93,7 @@ class Dispatcher
                 return;
             }
             foreach ($tasks as $task) {
-                if (!$taskInfo = JobsLoadTasks::getInstance()->getTasks()->get($task['id'])) {
+                if (! $taskInfo = JobsLoadTasks::getInstance()->getTasks()->get($task['id'])) {
                     continue;
                 }
                 if ($taskModel = (new TaskModel)->get($taskInfo['id'])) {

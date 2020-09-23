@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/9/3
- * Time: 下午9:25
- */
 
 namespace Core\Utility\Validate;
 
@@ -20,7 +14,7 @@ class Validate
         if (isset($this->map[$field])) {
             $instance = $this->map[$field];
         } else {
-            $instance = new Field();
+            $instance          = new Field();
             $this->map[$field] = $instance;
         }
         return $instance;
@@ -37,7 +31,7 @@ class Validate
                 continue;
             } else {
                 foreach ($rules as $rule => $args) {
-                    if (!Func::$rule($filed, $data, $args)) {
+                    if (! Func::$rule($filed, $data, $args)) {
                         $error[$filed][$rule] = isset($msg[$rule]) ? $msg[$rule] : $msg['__default__'];
                     }
                 }

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/12/3
- * Time: 下午4:08
- */
 
 namespace Core\Component\Spl;
 
@@ -47,11 +41,11 @@ class SplArray extends \ArrayObject
     function get($path)
     {
         $paths = explode(".", $path);
-        $data = $this->getArrayCopy();
-        while ($key = array_shift($paths)){
-            if(isset($data[$key])){
+        $data  = $this->getArrayCopy();
+        while ($key = array_shift($paths)) {
+            if (isset($data[$key])) {
                 $data = $data[$key];
-            }else{
+            } else {
                 return null;
             }
         }
@@ -60,14 +54,14 @@ class SplArray extends \ArrayObject
 
     public function delete($key)
     {
-        $path = explode(".", $key);
+        $path    = explode(".", $key);
         $lastKey = array_pop($path);
-        $data = $this->getArrayCopy();
-        $copy = &$data;
-        while ($key = array_shift($path)){
-            if(isset($copy[$key])){
+        $data    = $this->getArrayCopy();
+        $copy    = &$data;
+        while ($key = array_shift($path)) {
+            if (isset($copy[$key])) {
                 $copy = &$copy[$key];
-            }else{
+            } else {
                 return;
             }
         }
@@ -116,7 +110,9 @@ class SplArray extends \ArrayObject
 
     /**
      * 自定义排序
+     *
      * @param int $sort_flags
+     *
      * @return SplArray
      */
     public function sort($sort_flags = SORT_REGULAR)
@@ -128,8 +124,10 @@ class SplArray extends \ArrayObject
 
     /**
      * 取得某一列
+     *
      * @param string      $column
      * @param null|string $index_key
+     *
      * @return SplArray
      */
     public function column($column, $index_key = null)
@@ -148,8 +146,10 @@ class SplArray extends \ArrayObject
 
     /**
      * 过滤本数组
+     *
      * @param string|array $keys    需要取得/排除的键
      * @param bool         $exclude true则排除设置的键名 false则仅获取设置的键名
+     *
      * @return SplArray
      */
     public function filter($keys, $exclude = false)
@@ -159,7 +159,7 @@ class SplArray extends \ArrayObject
         }
         $new = array();
         foreach ($this->getArrayCopy() as $name => $value) {
-            if (!$exclude) {
+            if (! $exclude) {
                 in_array($name, $keys) ? $new[$name] = $value : null;
             } else {
                 in_array($name, $keys) ? null : $new[$name] = $value;
@@ -188,7 +188,7 @@ class SplArray extends \ArrayObject
 
     public function flush()
     {
-        foreach ($this as $key => $item){
+        foreach ($this as $key => $item) {
             unset($this[$key]);
         }
         return $this;

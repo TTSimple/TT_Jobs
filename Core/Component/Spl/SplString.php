@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/4/1
- * Time: 下午2:52
- */
 
 namespace Core\Component\Spl;
 
@@ -20,7 +14,7 @@ class SplString
 
     function setString($string)
     {
-        $this->rawString = (String)$string;
+        $this->rawString = (string)$string;
         return $this;
     }
 
@@ -186,7 +180,7 @@ class SplString
     function regex($regex, $rawReturn = false)
     {
         preg_match($regex, $this->rawString, $result);
-        if (!empty($result)) {
+        if (! empty($result)) {
             if ($rawReturn) {
                 return $result;
             } else {
@@ -209,7 +203,7 @@ class SplString
 
     function __toString()
     {
-        return (String)$this->rawString;
+        return (string)$this->rawString;
     }
 
 

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/7/5
- * Time: 下午5:20
- */
 
 namespace Core\Component;
 
@@ -13,8 +7,8 @@ use Core\Swoole\Server;
 
 class Barrier
 {
-    private $tasks = [];
-    private $maps = [];
+    private $tasks   = [];
+    private $maps    = [];
     private $results = [];
 
     function add($taskName, $callable)
@@ -38,9 +32,9 @@ class Barrier
             $temp[]       = $task;
             $this->maps[] = $name;
         }
-        if (!empty($temp)) {
+        if (! empty($temp)) {
             $ret = Server::getInstance()->getServer()->taskWaitMulti($temp, $timeout);
-            if (!empty($ret)) {
+            if (! empty($ret)) {
                 //极端情况下  所有任务都超时
                 foreach ($ret as $index => $result) {
                     $this->results[$this->maps[$index]] = $result;

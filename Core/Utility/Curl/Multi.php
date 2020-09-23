@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/9/24
- * Time: 下午11:30
- */
 
 namespace Core\Utility\Curl;
 
@@ -48,7 +42,6 @@ class Multi
                 }
             } while ($mrc == CURLM_CALL_MULTI_PERFORM);
         }
-
         foreach ($map as $ch) {
             curl_multi_remove_handle($mh, $ch);
             curl_close($ch);

@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/10/19
- * Time: 下午1:20
- */
 
 namespace Core\Component\RPC\Common;
 
@@ -15,10 +9,10 @@ class Config extends SplBean
 {
     protected $host;
     protected $port;
-    protected $eof = '0x0d0x0a';
+    protected $eof                    = '0x0d0x0a';
     protected $heartBeatCheckInterval = 30;
-    protected $packageParserClass = DefaultPackageParser::class;
-    protected $connectTimeOut = 0.5;
+    protected $packageParserClass     = DefaultPackageParser::class;
+    protected $connectTimeOut         = 0.5;
 
     /**
      * @return float

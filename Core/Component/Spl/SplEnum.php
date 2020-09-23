@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/6/11
- * Time: 下午2:56
- */
 
 namespace Core\Component\Spl;
 
@@ -16,8 +10,8 @@ class SplEnum
 
     final function __construct($enumVal)
     {
-        $list = static::enumList();
-        $key  = array_search($enumVal, $list, true);
+        $list           = static::enumList();
+        $key            = array_search($enumVal, $list, true);
         $this->selfEnum = $key ? $key : '__default';
     }
 

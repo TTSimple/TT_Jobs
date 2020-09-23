@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/11/9
- * Time: 下午7:03
- */
 
 namespace Core\Component\Error;
 
@@ -24,7 +18,7 @@ class ErrorHandler implements IErrorHandler
     {
         //判断是否在HTTP模式下
         if (Request::getInstance()) {
-            Response::getInstance()->write(nl2br($msg) ." in file {$file} line {$line}");
+            Response::getInstance()->write(nl2br($msg) . " in file {$file} line {$line}");
         } else {
             Logger::getInstance('error')->console($msg . " in file {$file} line {$line}", false);
         }

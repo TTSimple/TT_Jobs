@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2018/1/17
- * Time: 上午11:28
- */
 
 namespace Core\Swoole\Process;
 

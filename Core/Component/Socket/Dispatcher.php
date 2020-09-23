@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/10/23
- * Time: 下午2:31
- */
 
 namespace Core\Component\Socket;
 
@@ -17,17 +11,18 @@ use Core\Component\Socket\Client\UdpClient;
 use Core\Component\Socket\Common\Command;
 use Core\Component\Socket\Common\CommandList;
 use Core\Swoole\Server;
+use Exception;
 
 
 class Dispatcher
 {
     private static $instance;
-    private $commandList;
-    private $commandParser;
+    private        $commandList;
+    private        $commandParser;
 
     static function getInstance($commandRegisterClass, $commandParserClass)
     {
-        if (!isset(self::$instance)) {
+        if (! isset(self::$instance)) {
             self::$instance = new Dispatcher($commandRegisterClass, $commandParserClass);
         }
         return self::$instance;
@@ -78,7 +73,7 @@ class Dispatcher
                     if ($ret !== null) {
                         Response::response($client, (string)$ret);
                     }
-                } catch (\Exception $exception) {
+                } catch (Exception $exception) {
                     trigger_error($exception->getTraceAsString());
                 }
             }

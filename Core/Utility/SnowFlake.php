@@ -11,7 +11,7 @@ namespace Core\Utility;
 /**
  * 雪花算法生成器
  * Class SnowFlake
- * @author : evalor <master@evalor.cn>
+ * @author  : evalor <master@evalor.cn>
  * @package EasySwoole\Core\Utility
  */
 class SnowFlake
@@ -23,10 +23,12 @@ class SnowFlake
 
     /**
      * 生成基于雪花算法的随机编号
-     * @author : evalor <master@evalor.cn>
+     *
      * @param int $dataCenterID 数据中心ID 0-31
-     * @param int $workerID 任务进程ID 0-31
+     * @param int $workerID     任务进程ID 0-31
+     *
      * @return int 分布式ID
+     * @author : evalor <master@evalor.cn>
      */
     static function make($dataCenterID = 0, $workerID = 0)
     {
@@ -48,9 +50,11 @@ class SnowFlake
 
     /**
      * 反向解析雪花算法生成的编号
-     * @author : evalor <master@evalor.cn>
+     *
      * @param int|float $snowFlakeId
+     *
      * @return \stdClass
+     * @author : evalor <master@evalor.cn>
      */
     static function unmake($snowFlakeId)
     {
@@ -65,9 +69,11 @@ class SnowFlake
 
     /**
      * 等待下一毫秒的时间戳
-     * @author : evalor <master@evalor.cn>
+     *
      * @param $lastTimestamp
+     *
      * @return float
+     * @author : evalor <master@evalor.cn>
      */
     private static function tilNextMillis($lastTimestamp)
     {
@@ -80,8 +86,8 @@ class SnowFlake
 
     /**
      * 获取毫秒级时间戳
-     * @author : evalor <master@evalor.cn>
      * @return float
+     * @author : evalor <master@evalor.cn>
      */
     private static function timeGen()
     {

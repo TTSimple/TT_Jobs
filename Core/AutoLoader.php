@@ -1,12 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: YF
- * Date: 16/8/24
- * Time: 下午11:58
- */
-
 namespace Core;
 
 
@@ -22,7 +15,7 @@ class AutoLoader
 
     static function getInstance()
     {
-        if (!isset(self::$instance)) {
+        if (! isset(self::$instance)) {
             self::$instance = new AutoLoader();
         }
         return self::$instance;

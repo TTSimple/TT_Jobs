@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2018/1/18
- * Time: 下午12:35
- */
 
 namespace Core\Swoole\Memory;
 
@@ -17,7 +11,7 @@ class ChannelManager
 
     static function getInstance()
     {
-        if (!isset(self::$instance)) {
+        if (! isset(self::$instance)) {
             self::$instance = new static();
         }
         return self::$instance;
@@ -25,20 +19,23 @@ class ChannelManager
 
     /**
      * 添加
-     * @param $name
+     *
+     * @param           $name
      * @param float|int $size
      */
     function add($name, $size = 1024 * 256)
     {
-        if (!isset($this->list[$name])) {
-            $chan = new \swoole_channel($size);
+        if (! isset($this->list[$name])) {
+            $chan              = new \swoole_channel($size);
             $this->list[$name] = $chan;
         }
     }
 
     /**
      * 获取
+     *
      * @param $name
+     *
      * @return \swoole_channel|null
      */
     function get($name)

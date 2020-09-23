@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/10/10
- * Time: 下午1:45
- */
 
 namespace Core\Component\Socket\Client;
 

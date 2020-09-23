@@ -57,7 +57,7 @@ class LogicResponse
         if (null === $key) {
             return $this->page;
         }
-        if (!isset($this->page[$key])) {
+        if (! isset($this->page[$key])) {
             return null;
         }
         return $this->page[$key];

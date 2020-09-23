@@ -14,6 +14,8 @@
     "ext-pcntl": "*",
     "ext-inotify": "*",
     "ext-posix": "*",
+    "ext-mbstring": "*",
+    "ext-curl": "*",
     "dragonmantank/cron-expression": "1.*",
     "topthink/think-orm": "1.*",
     "topthink/think-validate": "1.*"

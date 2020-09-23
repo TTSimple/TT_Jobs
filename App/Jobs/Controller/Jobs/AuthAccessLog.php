@@ -28,7 +28,7 @@ class AuthAccessLog extends Controller
             $logic->request()->setWhere(["uid = {$uid}"]);
         }
         $ret = $logic->call('getList');
-        if (!$ret->getStatus()) {
+        if (! $ret->getStatus()) {
             $this->json()->error($ret->getMsg());
             return;
         }
@@ -50,14 +50,14 @@ class AuthAccessLog extends Controller
 
     function GET_info()
     {
-        if (!$id = $this->request()->getServerParam('id')) {
+        if (! $id = $this->request()->getServerParam('id')) {
             $this->response()->write('操作失败');
             return;
         }
         $authGroupLogic = new Logic;
         $authGroupLogic->request()->setId($id);
         $ret = $authGroupLogic->call('getInfo');
-        if (!$ret->getStatus()) {
+        if (! $ret->getStatus()) {
             $this->json()->error($ret->getMsg());
             return;
         }
@@ -69,14 +69,14 @@ class AuthAccessLog extends Controller
 
     function POST_index()
     {
-        if (!$requestData = $this->request()->getPostData()) {
+        if (! $requestData = $this->request()->getPostData()) {
             $this->json()->error();
             return;
         }
         $logic = new Logic;
         $logic->request()->setData($requestData);
         $ret = $logic->call('create');
-        if (!$ret->getStatus()) {
+        if (! $ret->getStatus()) {
             $this->json()->error($ret->getMsg());
             return;
         }

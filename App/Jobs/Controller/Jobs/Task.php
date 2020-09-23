@@ -32,7 +32,7 @@ class Task extends Controller
         }
         $logic->request()->setOrder(['id DESC']);
         $ret = $logic->call('getList');
-        if (!$ret->getStatus()) {
+        if (! $ret->getStatus()) {
             $this->json()->error($ret->getMsg());
             return;
         }
@@ -59,14 +59,14 @@ class Task extends Controller
 
     function POST_index()
     {
-        if (!$requestData = $this->request()->getPostData()) {
+        if (! $requestData = $this->request()->getPostData()) {
             $this->json()->error();
             return;
         }
         $logic = new Logic;
         $logic->request()->setData($requestData);
         $ret = $logic->call('create');
-        if (!$ret->getStatus()) {
+        if (! $ret->getStatus()) {
             $this->json()->error($ret->getMsg());
             return;
         }
@@ -85,11 +85,11 @@ class Task extends Controller
 
     function PATCH_index()
     {
-        if (!$id = $this->request()->getServerParam('id')) {
+        if (! $id = $this->request()->getServerParam('id')) {
             $this->json()->error();
             return;
         }
-        if (!$requestData = $this->request()->getPostData()) {
+        if (! $requestData = $this->request()->getPostData()) {
             $this->json()->error();
             return;
         }
@@ -97,7 +97,7 @@ class Task extends Controller
         $logic->request()->setId($id);
         $logic->request()->setData($requestData);
         $ret = $logic->call('update');
-        if (!$ret->getStatus()) {
+        if (! $ret->getStatus()) {
             $this->json()->error($ret->getMsg());
             return;
         }
@@ -110,7 +110,7 @@ class Task extends Controller
 
     function GET_runTest()
     {
-        if (!$command = $this->request()->getQueryParam('command')) {
+        if (! $command = $this->request()->getQueryParam('command')) {
             $this->json()->error();
             return;
         }

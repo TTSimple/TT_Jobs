@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/10/23
- * Time: 下午3:49
- */
 
 namespace Core\Component\RPC\Server;
 
@@ -21,9 +15,9 @@ use \Core\Swoole\Server as SwooleServer;
 class Server
 {
     protected $config;
-    private $serverList = [];
-    private $serverActionList = [];
-    private $serverParser = [];
+    private   $serverList       = [];
+    private   $serverActionList = [];
+    private   $serverParser     = [];
 
     function __construct(Config $config)
     {
@@ -79,7 +73,7 @@ class Server
                 //判断有没有该服务
                 if (isset($this->serverList[$serverName])) {
                     //存在该服务  还未进行action 注册的时候
-                    if (!isset($this->serverActionList[$serverName])) {
+                    if (! isset($this->serverActionList[$serverName])) {
                         $actionList = new ActionList();
                         $service    = $this->serverList[$serverName];
                         //获取行为注册类

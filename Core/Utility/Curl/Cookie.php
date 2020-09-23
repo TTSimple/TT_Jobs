@@ -1,10 +1,4 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: yf
- * Date: 2017/10/22
- * Time: 下午10:50
- */
 
 namespace Core\Utility\Curl;
 
@@ -13,10 +7,10 @@ class Cookie
 {
     private $name;
     private $value;
-    private $expire = 0;
-    private $path = '/';
-    private $domain = '';
-    private $secure = false;
+    private $expire   = 0;
+    private $path     = '/';
+    private $domain   = '';
+    private $secure   = false;
     private $httponly = false;
 
     /**
